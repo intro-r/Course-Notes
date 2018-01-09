@@ -1669,7 +1669,349 @@ flying[recline_frequency==&quot;Never&quot;,]
     <h2>Indexing</h2>
   </hgroup>
   <article data-timings="">
-    <pre><code>## Error in `[.tbl_df`(flying, recline_frequency == &quot;Never&quot;, ): object &#39;recline_frequency&#39; not found
+    <pre><code>## # A tibble: 353 x 27
+##    respond~ gender age    height chil~ hous~ educ~ loca~ freq~ recl~ recl~
+##       &lt;dbl&gt; &lt;chr&gt;  &lt;fctr&gt; &lt;fctr&gt; &lt;lgl&gt; &lt;fct&gt; &lt;fct&gt; &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;lgl&gt;
+##  1  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+##  2   3.43e9 Male   30-44  &quot;5&#39;6\~ F     $0 -~ Bach~ Paci~ Once~ Never T    
+##  3  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+##  4   3.43e9 &lt;NA&gt;   &lt;NA&gt;   &quot;5&#39;7\~ NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  Once~ Never F    
+##  5  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+##  6  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+##  7  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+##  8  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+##  9   3.43e9 Male   18-29  &quot;5&#39;10~ F     $25,~ Bach~ Sout~ Once~ Never T    
+## 10  NA      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA   
+## # ... with 343 more rows, and 16 more variables: recline_rude &lt;fctr&gt;,
+## #   recline_eliminate &lt;lgl&gt;, switch_seats_friends &lt;fctr&gt;,
+## #   switch_seats_family &lt;fctr&gt;, wake_up_bathroom &lt;fctr&gt;, wake_up_walk
+## #   &lt;fctr&gt;, baby &lt;fctr&gt;, unruly_child &lt;fctr&gt;, two_arm_rests &lt;chr&gt;,
+## #   middle_arm_rest &lt;chr&gt;, shade &lt;chr&gt;, unsold_seat &lt;fctr&gt;, talk_stranger
+## #   &lt;fctr&gt;, get_up &lt;fctr&gt;, electronics &lt;lgl&gt;, smoked &lt;lgl&gt;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Enter the <code>filter()</code> function</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>filter(.data, ...)
+</code></pre>
+
+<p>where</p>
+
+<ul>
+<li><code>.data</code> is a tibble</li>
+<li><code>...</code> is a set of arguments about the data you want returned.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Filtering Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>From our previous example, we could consider only those who never recline their seats:</p>
+
+<pre><code class="r">flying %&gt;%
+  filter(recline_frequency==&quot;Never&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Filtering Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## # A tibble: 171 x 27
+##    respon~ gender age    height chil~ hous~ educa~ loca~ freq~ recl~ recl~
+##      &lt;dbl&gt; &lt;chr&gt;  &lt;fctr&gt; &lt;fctr&gt; &lt;lgl&gt; &lt;fct&gt; &lt;fctr&gt; &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;lgl&gt;
+##  1  3.43e9 Male   30-44  &quot;5&#39;6\~ F     $0 -~ Bache~ Paci~ Once~ Never T    
+##  2  3.43e9 &lt;NA&gt;   &lt;NA&gt;   &quot;5&#39;7\~ NA    &lt;NA&gt;  &lt;NA&gt;   &lt;NA&gt;  Once~ Never F    
+##  3  3.43e9 Male   18-29  &quot;5&#39;10~ F     $25,~ Bache~ Sout~ Once~ Never T    
+##  4  3.43e9 Male   30-44  &quot;5&#39;10~ F     $50,~ Some ~ Sout~ Once~ Never T    
+##  5  3.43e9 Male   18-29  &quot;5&#39;10~ T     $50,~ Some ~ Paci~ Once~ Never T    
+##  6  3.43e9 Male   18-29  &quot;5&#39;7\~ F     $25,~ Bache~ Paci~ Once~ Never T    
+##  7  3.43e9 Male   18-29  &quot;6&#39;0\~ F     $0 -~ Some ~ East~ Once~ Never T    
+##  8  3.43e9 Male   30-44  &quot;5&#39;10~ F     &lt;NA&gt;  Gradu~ Sout~ Once~ Never T    
+##  9  3.43e9 Male   18-29  &quot;6&#39;0\~ F     &lt;NA&gt;  Bache~ East~ Once~ Never T    
+## 10  3.43e9 Male   30-44  &quot;5&#39;9\~ T     $100~ High ~ Paci~ Once~ Never T    
+## # ... with 161 more rows, and 16 more variables: recline_rude &lt;fctr&gt;,
+## #   recline_eliminate &lt;lgl&gt;, switch_seats_friends &lt;fctr&gt;,
+## #   switch_seats_family &lt;fctr&gt;, wake_up_bathroom &lt;fctr&gt;, wake_up_walk
+## #   &lt;fctr&gt;, baby &lt;fctr&gt;, unruly_child &lt;fctr&gt;, two_arm_rests &lt;chr&gt;,
+## #   middle_arm_rest &lt;chr&gt;, shade &lt;chr&gt;, unsold_seat &lt;fctr&gt;, talk_stranger
+## #   &lt;fctr&gt;, get_up &lt;fctr&gt;, electronics &lt;lgl&gt;, smoked &lt;lgl&gt;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Further Filtering</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><code>filter()</code> supports the use of multiple conditions where we can use Boolean. </li>
+<li>For example if we wanted to consider only males who fly Once a year or less:</li>
+</ul>
+
+<pre><code class="r">flying %&gt;%
+  filter(gender==&quot;Male&quot; &amp; frequency==&quot;Once a year or less&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Further Filtering</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## # A tibble: 277 x 27
+##    respon~ gender age    height chil~ hous~ educa~ loca~ freq~ recl~ recl~
+##      &lt;dbl&gt; &lt;chr&gt;  &lt;fctr&gt; &lt;fctr&gt; &lt;lgl&gt; &lt;fct&gt; &lt;fctr&gt; &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;lgl&gt;
+##  1  3.43e9 Male   30-44  &quot;6&#39;3\~ T     &lt;NA&gt;  Gradu~ Paci~ Once~ Abou~ T    
+##  2  3.43e9 Male   30-44  &quot;5&#39;8\~ F     $100~ Bache~ Paci~ Once~ Usua~ T    
+##  3  3.43e9 Male   30-44  &quot;5&#39;11~ F     $0 -~ Bache~ Paci~ Once~ Alwa~ F    
+##  4  3.43e9 Male   30-44  &quot;5&#39;9\~ T     $25,~ Gradu~ East~ Once~ Usua~ T    
+##  5  3.43e9 Male   30-44  &quot;6&#39;0\~ T     $0 -~ Bache~ New ~ Once~ Once~ T    
+##  6  3.43e9 Male   30-44  &quot;5&#39;6\~ F     $0 -~ Bache~ Paci~ Once~ Never T    
+##  7  3.43e9 Male   18-29  &quot;6&#39;0\~ F     &lt;NA&gt;  Some ~ East~ Once~ Once~ T    
+##  8  3.43e9 Male   30-44  &quot;5&#39;8\~ T     $100~ Some ~ Midd~ Once~ Alwa~ F    
+##  9  3.43e9 Male   30-44  &quot;6&#39;1\~ F     &lt;NA&gt;  Bache~ West~ Once~ Once~ T    
+## 10  3.43e9 Male   18-29  &quot;5&#39;10~ F     $25,~ Bache~ Sout~ Once~ Never T    
+## # ... with 267 more rows, and 16 more variables: recline_rude &lt;fctr&gt;,
+## #   recline_eliminate &lt;lgl&gt;, switch_seats_friends &lt;fctr&gt;,
+## #   switch_seats_family &lt;fctr&gt;, wake_up_bathroom &lt;fctr&gt;, wake_up_walk
+## #   &lt;fctr&gt;, baby &lt;fctr&gt;, unruly_child &lt;fctr&gt;, two_arm_rests &lt;chr&gt;,
+## #   middle_arm_rest &lt;chr&gt;, shade &lt;chr&gt;, unsold_seat &lt;fctr&gt;, talk_stranger
+## #   &lt;fctr&gt;, get_up &lt;fctr&gt;, electronics &lt;lgl&gt;, smoked &lt;lgl&gt;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Further Filtering</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can also do this with individual filter commands</li>
+</ul>
+
+<pre><code class="r">flying %&gt;%
+  filter(gender==&quot;Male&quot;) %&gt;%
+  filter( frequency==&quot;Once a year or less&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Filtering out Missing Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can also use the <code>filter()</code> function to remove missing data for us. </li>
+<li>is.foo() is a function where <code>foo</code> represents a data type . </li>
+<li>We could choose to only use respondents that have a frequency. </li>
+<li>That means we wish to not have missing data for frequency:</li>
+</ul>
+
+<pre><code class="r">flying %&gt;%
+  filter(!is.na(frequency))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Select function</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We have seen how to subset the data based on rows. </li>
+<li>Now we want to consider how to choose just specific columns of the data. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <ul>
+<li>For example, lets consider if we want to look at the flying data and only consider information about the respondent. </li>
+<li>This means we would want to have id, gender, age, height, children under 18, household income, education and location. </li>
+<li>We could do this by using the <code>select()</code> function</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <p>With the <code>select()</code> function we have:</p>
+
+<pre><code>select(.data, ...)
+</code></pre>
+
+<p>where</p>
+
+<ul>
+<li><code>.data</code> is a tibble</li>
+<li><code>...</code> are the columns that you wish to have </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2><code>select()</code> Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We first start with our data</li>
+<li>Then we pass this to the <code>select()</code> function. </li>
+</ul>
+
+<pre><code class="r">flying %&gt;%
+    select(respondent_id, gender, age, height, children_under_18, household_income, education, location)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2><code>select()</code> Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## # A tibble: 1,040 x 8
+##    respondent_id gender age    height   childr~ househo~ education locati~
+##            &lt;dbl&gt; &lt;chr&gt;  &lt;fctr&gt; &lt;fctr&gt;   &lt;lgl&gt;   &lt;fctr&gt;   &lt;fctr&gt;    &lt;chr&gt;  
+##  1    3436139758 &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;     NA      &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;   
+##  2    3434278696 Male   30-44  &quot;6&#39;3\&quot;&quot;  T       &lt;NA&gt;     Graduate~ Pacific
+##  3    3434275578 Male   30-44  &quot;5&#39;8\&quot;&quot;  F       $100,00~ Bachelor~ Pacific
+##  4    3434268208 Male   30-44  &quot;5&#39;11\&quot;&quot; F       $0 - $2~ Bachelor~ Pacific
+##  5    3434250245 Male   30-44  &quot;5&#39;7\&quot;&quot;  F       $50,000~ Bachelor~ Pacific
+##  6    3434245875 Male   30-44  &quot;5&#39;9\&quot;&quot;  T       $25,000~ Graduate~ East N~
+##  7    3434235351 Male   30-44  &quot;6&#39;2\&quot;&quot;  T       &lt;NA&gt;     Some col~ Pacific
+##  8    3434218031 Male   30-44  &quot;6&#39;0\&quot;&quot;  T       $0 - $2~ Bachelor~ New En~
+##  9    3434213681 &lt;NA&gt;   &lt;NA&gt;   &quot;6&#39;0\&quot;&quot;  T       &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;   
+## 10    3434172894 Male   30-44  &quot;5&#39;6\&quot;&quot;  F       $0 - $2~ Bachelor~ Pacific
+## # ... with 1,030 more rows
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Removing Columns</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We may wish to choose columns like we did previously. </li>
+<li>Sometimes we just wish to remove columns that we are not interested in. </li>
+<li>Perhaps in the case of de-identifying data so that users personal information is not there. </li>
+</ul>
+
+<pre><code class="r">flying %&gt;%
+    select(-respondent_id)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Removing Columns</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## # A tibble: 1,040 x 26
+##    gend~ age   heig~ chil~ hous~ educ~ loca~ freq~ recl~ recl~ recl~ recl~
+##    &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;lgl&gt; &lt;fct&gt; &lt;fct&gt; &lt;chr&gt; &lt;fct&gt; &lt;fct&gt; &lt;lgl&gt; &lt;fct&gt; &lt;lgl&gt;
+##  1 &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  NA    &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  Once~ &lt;NA&gt;  NA    &lt;NA&gt;  NA   
+##  2 Male  30-44 &quot;6&#39;3~ T     &lt;NA&gt;  Grad~ Paci~ Once~ Abou~ T     Some~ F    
+##  3 Male  30-44 &quot;5&#39;8~ F     $100~ Bach~ Paci~ Once~ Usua~ T     No    F    
+##  4 Male  30-44 &quot;5&#39;1~ F     $0 -~ Bach~ Paci~ Once~ Alwa~ F     No    F    
+##  5 Male  30-44 &quot;5&#39;7~ F     $50,~ Bach~ Paci~ Once~ Abou~ F     No    F    
+##  6 Male  30-44 &quot;5&#39;9~ T     $25,~ Grad~ East~ Once~ Usua~ T     No    F    
+##  7 Male  30-44 &quot;6&#39;2~ T     &lt;NA&gt;  Some~ Paci~ Once~ Once~ F     Some~ T    
+##  8 Male  30-44 &quot;6&#39;0~ T     $0 -~ Bach~ New ~ Once~ Once~ T     No    T    
+##  9 &lt;NA&gt;  &lt;NA&gt;  &quot;6&#39;0~ T     &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  Once~ Once~ T     No    T    
+## 10 Male  30-44 &quot;5&#39;6~ F     $0 -~ Bach~ Paci~ Once~ Never T     Very  T    
+## # ... with 1,030 more rows, and 14 more variables: switch_seats_friends
+## #   &lt;fctr&gt;, switch_seats_family &lt;fctr&gt;, wake_up_bathroom &lt;fctr&gt;,
+## #   wake_up_walk &lt;fctr&gt;, baby &lt;fctr&gt;, unruly_child &lt;fctr&gt;, two_arm_rests
+## #   &lt;chr&gt;, middle_arm_rest &lt;chr&gt;, shade &lt;chr&gt;, unsold_seat &lt;fctr&gt;,
+## #   talk_stranger &lt;fctr&gt;, get_up &lt;fctr&gt;, electronics &lt;lgl&gt;, smoked &lt;lgl&gt;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Removing Columns</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>If we wish to remove many columns we may want to list the names in a vector:</li>
+<li>For example if we want to remove id, age and gender we could use the following code</li>
+<li>To help with this we use the helper function <code>one_of()</code></li>
+<li>This looks for matches inside a vector</li>
+</ul>
+
+<pre><code class="r">cols &lt;- c(&quot;respondent_id&quot;, &quot;gender&quot;)
+flying %&gt;%
+    select(-one_of(cols))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Removing Columns</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>we also may want to remove columns that contain similar words in their names. </li>
+<li>For example if we wanted to remove any column that had &quot;frequency&quot; in it, we could use the <code>select()</code> function along with a helper function of <code>contains()</code>.</li>
+</ul>
+
+<pre><code class="r">flying %&gt;%
+    select(-contains(&quot;freuency&quot;))
 </code></pre>
 
   </article>
@@ -2991,248 +3333,344 @@ head(aggregate(as.numeric(recline_frequency)~location, flying, mean))
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=77 title='Renaming Columns'>
+        data-slide=77 title='Enter the <code>filter()</code> function'>
          77
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=78 title='Renaming Columns'>
+        data-slide=78 title='Filtering Example'>
          78
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=79 title='Renaming Columns'>
+        data-slide=79 title='Filtering Example'>
          79
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=80 title='Renaming Columns'>
+        data-slide=80 title='Further Filtering'>
          80
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=81 title='Unique Observations'>
+        data-slide=81 title='Further Filtering'>
          81
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=82 title='Unique Observations'>
+        data-slide=82 title='Further Filtering'>
          82
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=83 title='Arranging the Data'>
+        data-slide=83 title='Filtering out Missing Data'>
          83
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=84 title='Arranging the Data'>
+        data-slide=84 title='The Select function'>
          84
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=85 title='Enter the <code>arrange()</code> Function'>
+        data-slide=85 title='NA'>
          85
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=86 title='Arrange Function Example'>
+        data-slide=86 title='NA'>
          86
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=87 title='Arrange Function Example'>
+        data-slide=87 title='<code>select()</code> Example'>
          87
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=88 title='Arrange Function Descending Example'>
+        data-slide=88 title='<code>select()</code> Example'>
          88
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=89 title='Arrange Function Descending Example'>
+        data-slide=89 title='Removing Columns'>
          89
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=90 title='More Complex Arrange'>
+        data-slide=90 title='Removing Columns'>
          90
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=91 title='More Complex Arrange'>
+        data-slide=91 title='Removing Columns'>
          91
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=92 title='More Complex Arrange'>
+        data-slide=92 title='Removing Columns'>
          92
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=93 title='Summarizing Data'>
+        data-slide=93 title='Renaming Columns'>
          93
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=94 title='Summarizing Data Example'>
+        data-slide=94 title='Renaming Columns'>
          94
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=95 title='Summarizing Data Example Base R'>
+        data-slide=95 title='Renaming Columns'>
          95
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=96 title='NA'>
+        data-slide=96 title='Renaming Columns'>
          96
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=97 title='Enter <code>summarise()</code> Function'>
+        data-slide=97 title='Unique Observations'>
          97
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=98 title='Summarise Function Example'>
+        data-slide=98 title='Unique Observations'>
          98
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=99 title='Summarise Function Example'>
+        data-slide=99 title='Arranging the Data'>
          99
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=100 title='Another Example'>
+        data-slide=100 title='Arranging the Data'>
          100
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=101 title='Another Example'>
+        data-slide=101 title='Enter the <code>arrange()</code> Function'>
          101
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=102 title='Counting Events'>
+        data-slide=102 title='Arrange Function Example'>
          102
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=103 title='Counting Events'>
+        data-slide=103 title='Arrange Function Example'>
          103
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=104 title='Counting Events'>
+        data-slide=104 title='Arrange Function Descending Example'>
          104
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=105 title='Counting Events'>
+        data-slide=105 title='Arrange Function Descending Example'>
          105
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=106 title='Counting Events'>
+        data-slide=106 title='More Complex Arrange'>
          106
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=107 title='Counting Unique Items'>
+        data-slide=107 title='More Complex Arrange'>
          107
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=108 title='Counting Unique Items'>
+        data-slide=108 title='More Complex Arrange'>
          108
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=109 title='Adding New Variables'>
+        data-slide=109 title='Summarizing Data'>
          109
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=110 title='The Mutate Function'>
+        data-slide=110 title='Summarizing Data Example'>
          110
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=111 title='The transmute Function'>
+        data-slide=111 title='Summarizing Data Example Base R'>
          111
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=112 title='Differences Between <code>mutate()</code> and <code>transmute()</code>'>
+        data-slide=112 title='NA'>
          112
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=113 title='Mutate and Transmute Example'>
+        data-slide=113 title='Enter <code>summarise()</code> Function'>
          113
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=114 title='Mutate and Transmute Example'>
+        data-slide=114 title='Summarise Function Example'>
          114
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=115 title='Mutate and Transmute Example'>
+        data-slide=115 title='Summarise Function Example'>
          115
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=116 title='Mutate and Transmute Example'>
+        data-slide=116 title='Another Example'>
          116
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=117 title='Mutate and Transmute Example'>
+        data-slide=117 title='Another Example'>
          117
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=118 title='Counting Events'>
+         118
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=119 title='Counting Events'>
+         119
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=120 title='Counting Events'>
+         120
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=121 title='Counting Events'>
+         121
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=122 title='Counting Events'>
+         122
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=123 title='Counting Unique Items'>
+         123
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=124 title='Counting Unique Items'>
+         124
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=125 title='Adding New Variables'>
+         125
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=126 title='The Mutate Function'>
+         126
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=127 title='The transmute Function'>
+         127
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=128 title='Differences Between <code>mutate()</code> and <code>transmute()</code>'>
+         128
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=129 title='Mutate and Transmute Example'>
+         129
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=130 title='Mutate and Transmute Example'>
+         130
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=131 title='Mutate and Transmute Example'>
+         131
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=132 title='Mutate and Transmute Example'>
+         132
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=133 title='Mutate and Transmute Example'>
+         133
       </a>
     </li>
   </ul>

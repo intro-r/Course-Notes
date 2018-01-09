@@ -996,8 +996,213 @@ Now this is not very difficult to do, what we have is that we are working with `
 
 ```{r, echo=F}
 library(fivethirtyeight)
-flying[recline_frequency=="Never",]
+flying[flying$recline_frequency=="Never",]
 ```
+
+
+
+--- .class #id
+
+## Enter the `filter()` function
+
+```
+filter(.data, ...)
+```
+
+where
+
+- `.data` is a tibble
+- `...` is a set of arguments about the data you want returned.
+
+--- .class #id
+
+## Filtering Example
+
+From our previous example, we could consider only those who never recline their seats:
+  
+```{r, eval=F}
+flying %>%
+  filter(recline_frequency=="Never")
+```
+
+--- .class #id
+
+## Filtering Example
+
+
+  
+```{r, echo=F}
+flying %>%
+  filter(recline_frequency=="Never")
+```
+
+
+--- .class #id
+
+## Further Filtering
+
+- `filter()` supports the use of multiple conditions where we can use Boolean. 
+- For example if we wanted to consider only males who fly Once a year or less:
+  
+```{r, eval=F}
+flying %>%
+  filter(gender=="Male" & frequency=="Once a year or less")
+```
+
+
+--- .class #id
+
+## Further Filtering
+
+
+```{r, echo=F}
+flying %>%
+  filter(gender=="Male" & frequency=="Once a year or less")
+```
+
+
+--- .class #id
+
+## Further Filtering
+
+- We can also do this with individual filter commands
+
+```{r, eval=F}
+flying %>%
+  filter(gender=="Male") %>%
+  filter( frequency=="Once a year or less")
+```
+
+
+--- .class #id
+
+## Filtering out Missing Data
+
+
+- We can also use the `filter()` function to remove missing data for us. 
+- is.foo() is a function where `foo` represents a data type . 
+- We could choose to only use respondents that have a frequency. 
+- That means we wish to not have missing data for frequency:
+
+```{r, eval=F}
+flying %>%
+  filter(!is.na(frequency))
+```
+
+
+--- .class #id
+
+## The Select function
+
+- We have seen how to subset the data based on rows. 
+- Now we want to consider how to choose just specific columns of the data. 
+
+
+--- .class #id
+
+- For example, lets consider if we want to look at the flying data and only consider information about the respondent. 
+- This means we would want to have id, gender, age, height, children under 18, household income, education and location. 
+- We could do this by using the `select()` function
+
+
+--- .class #id
+
+With the `select()` function we have:
+  
+```
+select(.data, ...)
+```
+
+where
+
+- `.data` is a tibble
+- `...` are the columns that you wish to have 
+
+
+
+--- .class #id
+
+## `select()` Example
+
+- We first start with our data
+- Then we pass this to the `select()` function. 
+
+```{r, eval=F}
+flying %>%
+    select(respondent_id, gender, age, height, children_under_18, household_income, education, location)
+``` 
+
+
+
+
+--- .class #id
+
+## `select()` Example
+
+ 
+
+```{r, echo=F}
+flying %>%
+    select(respondent_id, gender, age, height, children_under_18, household_income, education, location)
+``` 
+
+
+--- .class #id 
+
+## Removing Columns
+
+- We may wish to choose columns like we did previously. 
+- Sometimes we just wish to remove columns that we are not interested in. 
+- Perhaps in the case of de-identifying data so that users personal information is not there. 
+
+```{R, eval=F}
+flying %>%
+    select(-respondent_id)
+``` 
+
+
+--- .class #id 
+
+## Removing Columns
+
+
+```{R, echo=F}
+flying %>%
+    select(-respondent_id)
+``` 
+
+
+
+
+--- .class #id 
+
+## Removing Columns
+
+- If we wish to remove many columns we may want to list the names in a vector:
+- For example if we want to remove id, age and gender we could use the following code
+- To help with this we use the helper function `one_of()`
+- This looks for matches inside a vector
+
+```{R, eval=F}
+cols <- c("respondent_id", "gender")
+flying %>%
+    select(-one_of(cols))
+``` 
+
+
+--- .class #id 
+
+## Removing Columns
+
+- we also may want to remove columns that contain similar words in their names. 
+- For example if we wanted to remove any column that had "frequency" in it, we could use the `select()` function along with a helper function of `contains()`.
+
+```{R, eval=F}
+flying %>%
+    select(-contains("freuency"))
+```
+
+
 
 
 --- .class #id

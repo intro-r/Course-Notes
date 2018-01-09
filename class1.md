@@ -1097,8 +1097,305 @@ Now this is not very difficult to do, what we have is that we are working with `
 
 
 ```
-## Error in `[.tbl_df`(flying, recline_frequency == "Never", ): object 'recline_frequency' not found
+## # A tibble: 353 x 27
+##    respond~ gender age    height chil~ hous~ educ~ loca~ freq~ recl~ recl~
+##       <dbl> <chr>  <fctr> <fctr> <lgl> <fct> <fct> <chr> <fct> <fct> <lgl>
+##  1  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+##  2   3.43e9 Male   30-44  "5'6\~ F     $0 -~ Bach~ Paci~ Once~ Never T    
+##  3  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+##  4   3.43e9 <NA>   <NA>   "5'7\~ NA    <NA>  <NA>  <NA>  Once~ Never F    
+##  5  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+##  6  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+##  7  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+##  8  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+##  9   3.43e9 Male   18-29  "5'10~ F     $25,~ Bach~ Sout~ Once~ Never T    
+## 10  NA      <NA>   <NA>   <NA>   NA    <NA>  <NA>  <NA>  <NA>  <NA>  NA   
+## # ... with 343 more rows, and 16 more variables: recline_rude <fctr>,
+## #   recline_eliminate <lgl>, switch_seats_friends <fctr>,
+## #   switch_seats_family <fctr>, wake_up_bathroom <fctr>, wake_up_walk
+## #   <fctr>, baby <fctr>, unruly_child <fctr>, two_arm_rests <chr>,
+## #   middle_arm_rest <chr>, shade <chr>, unsold_seat <fctr>, talk_stranger
+## #   <fctr>, get_up <fctr>, electronics <lgl>, smoked <lgl>
 ```
+
+
+
+--- .class #id
+
+## Enter the `filter()` function
+
+```
+filter(.data, ...)
+```
+
+where
+
+- `.data` is a tibble
+- `...` is a set of arguments about the data you want returned.
+
+--- .class #id
+
+## Filtering Example
+
+From our previous example, we could consider only those who never recline their seats:
+  
+
+```r
+flying %>%
+  filter(recline_frequency=="Never")
+```
+
+--- .class #id
+
+## Filtering Example
+
+
+  
+
+```
+## # A tibble: 171 x 27
+##    respon~ gender age    height chil~ hous~ educa~ loca~ freq~ recl~ recl~
+##      <dbl> <chr>  <fctr> <fctr> <lgl> <fct> <fctr> <chr> <fct> <fct> <lgl>
+##  1  3.43e9 Male   30-44  "5'6\~ F     $0 -~ Bache~ Paci~ Once~ Never T    
+##  2  3.43e9 <NA>   <NA>   "5'7\~ NA    <NA>  <NA>   <NA>  Once~ Never F    
+##  3  3.43e9 Male   18-29  "5'10~ F     $25,~ Bache~ Sout~ Once~ Never T    
+##  4  3.43e9 Male   30-44  "5'10~ F     $50,~ Some ~ Sout~ Once~ Never T    
+##  5  3.43e9 Male   18-29  "5'10~ T     $50,~ Some ~ Paci~ Once~ Never T    
+##  6  3.43e9 Male   18-29  "5'7\~ F     $25,~ Bache~ Paci~ Once~ Never T    
+##  7  3.43e9 Male   18-29  "6'0\~ F     $0 -~ Some ~ East~ Once~ Never T    
+##  8  3.43e9 Male   30-44  "5'10~ F     <NA>  Gradu~ Sout~ Once~ Never T    
+##  9  3.43e9 Male   18-29  "6'0\~ F     <NA>  Bache~ East~ Once~ Never T    
+## 10  3.43e9 Male   30-44  "5'9\~ T     $100~ High ~ Paci~ Once~ Never T    
+## # ... with 161 more rows, and 16 more variables: recline_rude <fctr>,
+## #   recline_eliminate <lgl>, switch_seats_friends <fctr>,
+## #   switch_seats_family <fctr>, wake_up_bathroom <fctr>, wake_up_walk
+## #   <fctr>, baby <fctr>, unruly_child <fctr>, two_arm_rests <chr>,
+## #   middle_arm_rest <chr>, shade <chr>, unsold_seat <fctr>, talk_stranger
+## #   <fctr>, get_up <fctr>, electronics <lgl>, smoked <lgl>
+```
+
+
+--- .class #id
+
+## Further Filtering
+
+- `filter()` supports the use of multiple conditions where we can use Boolean. 
+- For example if we wanted to consider only males who fly Once a year or less:
+  
+
+```r
+flying %>%
+  filter(gender=="Male" & frequency=="Once a year or less")
+```
+
+
+--- .class #id
+
+## Further Filtering
+
+
+
+```
+## # A tibble: 277 x 27
+##    respon~ gender age    height chil~ hous~ educa~ loca~ freq~ recl~ recl~
+##      <dbl> <chr>  <fctr> <fctr> <lgl> <fct> <fctr> <chr> <fct> <fct> <lgl>
+##  1  3.43e9 Male   30-44  "6'3\~ T     <NA>  Gradu~ Paci~ Once~ Abou~ T    
+##  2  3.43e9 Male   30-44  "5'8\~ F     $100~ Bache~ Paci~ Once~ Usua~ T    
+##  3  3.43e9 Male   30-44  "5'11~ F     $0 -~ Bache~ Paci~ Once~ Alwa~ F    
+##  4  3.43e9 Male   30-44  "5'9\~ T     $25,~ Gradu~ East~ Once~ Usua~ T    
+##  5  3.43e9 Male   30-44  "6'0\~ T     $0 -~ Bache~ New ~ Once~ Once~ T    
+##  6  3.43e9 Male   30-44  "5'6\~ F     $0 -~ Bache~ Paci~ Once~ Never T    
+##  7  3.43e9 Male   18-29  "6'0\~ F     <NA>  Some ~ East~ Once~ Once~ T    
+##  8  3.43e9 Male   30-44  "5'8\~ T     $100~ Some ~ Midd~ Once~ Alwa~ F    
+##  9  3.43e9 Male   30-44  "6'1\~ F     <NA>  Bache~ West~ Once~ Once~ T    
+## 10  3.43e9 Male   18-29  "5'10~ F     $25,~ Bache~ Sout~ Once~ Never T    
+## # ... with 267 more rows, and 16 more variables: recline_rude <fctr>,
+## #   recline_eliminate <lgl>, switch_seats_friends <fctr>,
+## #   switch_seats_family <fctr>, wake_up_bathroom <fctr>, wake_up_walk
+## #   <fctr>, baby <fctr>, unruly_child <fctr>, two_arm_rests <chr>,
+## #   middle_arm_rest <chr>, shade <chr>, unsold_seat <fctr>, talk_stranger
+## #   <fctr>, get_up <fctr>, electronics <lgl>, smoked <lgl>
+```
+
+
+--- .class #id
+
+## Further Filtering
+
+- We can also do this with individual filter commands
+
+
+```r
+flying %>%
+  filter(gender=="Male") %>%
+  filter( frequency=="Once a year or less")
+```
+
+
+--- .class #id
+
+## Filtering out Missing Data
+
+
+- We can also use the `filter()` function to remove missing data for us. 
+- is.foo() is a function where `foo` represents a data type . 
+- We could choose to only use respondents that have a frequency. 
+- That means we wish to not have missing data for frequency:
+
+
+```r
+flying %>%
+  filter(!is.na(frequency))
+```
+
+
+--- .class #id
+
+## The Select function
+
+- We have seen how to subset the data based on rows. 
+- Now we want to consider how to choose just specific columns of the data. 
+
+
+--- .class #id
+
+- For example, lets consider if we want to look at the flying data and only consider information about the respondent. 
+- This means we would want to have id, gender, age, height, children under 18, household income, education and location. 
+- We could do this by using the `select()` function
+
+
+--- .class #id
+
+With the `select()` function we have:
+  
+```
+select(.data, ...)
+```
+
+where
+
+- `.data` is a tibble
+- `...` are the columns that you wish to have 
+
+
+
+--- .class #id
+
+## `select()` Example
+
+- We first start with our data
+- Then we pass this to the `select()` function. 
+
+
+```r
+flying %>%
+    select(respondent_id, gender, age, height, children_under_18, household_income, education, location)
+```
+
+
+
+
+--- .class #id
+
+## `select()` Example
+
+ 
+
+
+```
+## # A tibble: 1,040 x 8
+##    respondent_id gender age    height   childr~ househo~ education locati~
+##            <dbl> <chr>  <fctr> <fctr>   <lgl>   <fctr>   <fctr>    <chr>  
+##  1    3436139758 <NA>   <NA>   <NA>     NA      <NA>     <NA>      <NA>   
+##  2    3434278696 Male   30-44  "6'3\""  T       <NA>     Graduate~ Pacific
+##  3    3434275578 Male   30-44  "5'8\""  F       $100,00~ Bachelor~ Pacific
+##  4    3434268208 Male   30-44  "5'11\"" F       $0 - $2~ Bachelor~ Pacific
+##  5    3434250245 Male   30-44  "5'7\""  F       $50,000~ Bachelor~ Pacific
+##  6    3434245875 Male   30-44  "5'9\""  T       $25,000~ Graduate~ East N~
+##  7    3434235351 Male   30-44  "6'2\""  T       <NA>     Some col~ Pacific
+##  8    3434218031 Male   30-44  "6'0\""  T       $0 - $2~ Bachelor~ New En~
+##  9    3434213681 <NA>   <NA>   "6'0\""  T       <NA>     <NA>      <NA>   
+## 10    3434172894 Male   30-44  "5'6\""  F       $0 - $2~ Bachelor~ Pacific
+## # ... with 1,030 more rows
+```
+
+
+--- .class #id 
+
+## Removing Columns
+
+- We may wish to choose columns like we did previously. 
+- Sometimes we just wish to remove columns that we are not interested in. 
+- Perhaps in the case of de-identifying data so that users personal information is not there. 
+
+
+```r
+flying %>%
+    select(-respondent_id)
+```
+
+
+--- .class #id 
+
+## Removing Columns
+
+
+
+```
+## # A tibble: 1,040 x 26
+##    gend~ age   heig~ chil~ hous~ educ~ loca~ freq~ recl~ recl~ recl~ recl~
+##    <chr> <fct> <fct> <lgl> <fct> <fct> <chr> <fct> <fct> <lgl> <fct> <lgl>
+##  1 <NA>  <NA>  <NA>  NA    <NA>  <NA>  <NA>  Once~ <NA>  NA    <NA>  NA   
+##  2 Male  30-44 "6'3~ T     <NA>  Grad~ Paci~ Once~ Abou~ T     Some~ F    
+##  3 Male  30-44 "5'8~ F     $100~ Bach~ Paci~ Once~ Usua~ T     No    F    
+##  4 Male  30-44 "5'1~ F     $0 -~ Bach~ Paci~ Once~ Alwa~ F     No    F    
+##  5 Male  30-44 "5'7~ F     $50,~ Bach~ Paci~ Once~ Abou~ F     No    F    
+##  6 Male  30-44 "5'9~ T     $25,~ Grad~ East~ Once~ Usua~ T     No    F    
+##  7 Male  30-44 "6'2~ T     <NA>  Some~ Paci~ Once~ Once~ F     Some~ T    
+##  8 Male  30-44 "6'0~ T     $0 -~ Bach~ New ~ Once~ Once~ T     No    T    
+##  9 <NA>  <NA>  "6'0~ T     <NA>  <NA>  <NA>  Once~ Once~ T     No    T    
+## 10 Male  30-44 "5'6~ F     $0 -~ Bach~ Paci~ Once~ Never T     Very  T    
+## # ... with 1,030 more rows, and 14 more variables: switch_seats_friends
+## #   <fctr>, switch_seats_family <fctr>, wake_up_bathroom <fctr>,
+## #   wake_up_walk <fctr>, baby <fctr>, unruly_child <fctr>, two_arm_rests
+## #   <chr>, middle_arm_rest <chr>, shade <chr>, unsold_seat <fctr>,
+## #   talk_stranger <fctr>, get_up <fctr>, electronics <lgl>, smoked <lgl>
+```
+
+
+
+
+--- .class #id 
+
+## Removing Columns
+
+- If we wish to remove many columns we may want to list the names in a vector:
+- For example if we want to remove id, age and gender we could use the following code
+- To help with this we use the helper function `one_of()`
+- This looks for matches inside a vector
+
+
+```r
+cols <- c("respondent_id", "gender")
+flying %>%
+    select(-one_of(cols))
+```
+
+
+--- .class #id 
+
+## Removing Columns
+
+- we also may want to remove columns that contain similar words in their names. 
+- For example if we wanted to remove any column that had "frequency" in it, we could use the `select()` function along with a helper function of `contains()`.
+
+
+```r
+flying %>%
+    select(-contains("freuency"))
+```
+
+
 
 
 --- .class #id
