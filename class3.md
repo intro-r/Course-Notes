@@ -613,7 +613,7 @@ $$\text{Population is not Normally Distributed}$$
 
 ```r
 plot(my_anova, 2)
-
+my_anova_resid <- residuals(my_anova)
 
 #install.packages("nortest")
 library(nortest)
@@ -635,7 +635,11 @@ lillie.test(my_anova_resid)
 
 
 ```
-## Error in sort(x[complete.cases(x)]): object 'my_anova_resid' not found
+## 
+## 	Lilliefors (Kolmogorov-Smirnov) normality test
+## 
+## data:  my_anova_resid
+## D = 0.1155, p-value < 2.2e-16
 ```
 
 

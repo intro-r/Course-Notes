@@ -539,7 +539,7 @@ $$\text{Population is not Normally Distributed}$$
 
 ```{r, eval=F}
 plot(my_anova, 2)
-
+my_anova_resid <- residuals(my_anova)
 
 #install.packages("nortest")
 library(nortest)
@@ -552,6 +552,7 @@ lillie.test(my_anova_resid)
 
 
 ```{r, echo=F}
+my_anova_resid <- residuals(my_anova)
 plot(my_anova, 2)
 ```
 
@@ -563,6 +564,7 @@ plot(my_anova, 2)
 
 ```{r, echo=F}
 #install.packages("nortest")
+my_anova_resid <- residuals(my_anova)
 library(nortest)
 lillie.test(my_anova_resid)
 ```

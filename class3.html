@@ -928,7 +928,7 @@ detach()
 </ul>
 
 <pre><code class="r">plot(my_anova, 2)
-
+my_anova_resid &lt;- residuals(my_anova)
 
 #install.packages(&quot;nortest&quot;)
 library(nortest)
@@ -955,7 +955,11 @@ lillie.test(my_anova_resid)
     <h2>Testing Assumptions of ANOVA</h2>
   </hgroup>
   <article data-timings="">
-    <pre><code>## Error in sort(x[complete.cases(x)]): object &#39;my_anova_resid&#39; not found
+    <pre><code>## 
+##  Lilliefors (Kolmogorov-Smirnov) normality test
+## 
+## data:  my_anova_resid
+## D = 0.1155, p-value &lt; 2.2e-16
 </code></pre>
 
   </article>
