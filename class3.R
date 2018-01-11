@@ -104,5 +104,6 @@ plot(my_anova, 2)
 
 #install.packages("nortest")
 library(nortest)
+my_anova_resid <- residuals(my_anova)
 lillie.test(my_anova_resid)
 
