@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Introduction to Statistics in R</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Introduction to Statistics in R">
+  <meta name="author" content="Adam J Sullivan">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/quiz/css/demo.css"></link>
+<link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+<link rel=stylesheet href="libraries/widgets/interactive/css/aceeditor.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+<link rel=stylesheet href="./assets/css/style.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+      <slide class="nobackground">
+    <article class="flexbox vcenter">
+      <span>
+        <img width='300px' src="assets/img/shield_image_large2.png">
+      </span>
+    </article>
+  </slide>
+    <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/bcbi_small.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>Introduction to Statistics in R</h1>
+    <h2>Day 3 - ANOVA</h2>
+    <p>Adam J Sullivan<br/></p>
+  </hgroup>
+  <article></article>  
+  <footer class = 'license'>
+    <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>
+    <img width = '80px' src = 'http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-nd.png'>
+    </a>
+  </footer>
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="segue" id="slide-1" style="background:grey;">
+  <hgroup>
+    <h1>What is ANOVA?</h1>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Recap on our progress:</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Up to this point we have seen basic statistical features:
+
+<ul>
+<li>mean</li>
+<li>variance</li>
+<li>standard deviation</li>
+<li>median</li>
+<li>min </li>
+<li>max</li>
+</ul></li>
+<li>We have also considered a t-test in which we compare a continuous variable across 2 groups. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Enter ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>What if we need to compare more than 2 groups? </li>
+<li>Lets say we have the groups: A, B and C</li>
+<li>We could compare:
+
+<ul>
+<li>A vs B</li>
+<li>A vs C</li>
+<li>B vs C</li>
+</ul></li>
+<li>What are some issues with this?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Enter ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Multiple Testing issues
+
+<ul>
+<li>Each time you perform this test on the same data, you use a type 1 error of 0.05, the more tests you perfrom the more this error increases. </li>
+<li>If you need to do multiple testing you then have to do a p-value correction. </li>
+</ul></li>
+<li>Could be a waste of time if all the groups are the same. 
+
+<ul>
+<li>More computational time if there is no difference. </li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Enter ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We then can consider ANOVA: ANalysis Of VAriance</li>
+<li>ANOVA asks a very basic question:
+
+<ul>
+<li>Where is the variability coming from?
+
+<ul>
+<li>Is it coming from within each group?</li>
+<li>Is it coming between the groups? </li>
+</ul></li>
+</ul></li>
+<li>The hypothesis test we perform is </li>
+</ul>
+
+<p>\[ H_0: \mu_1 = \mu_2 = \cdots = \mu_k\] 
+\[ \text{At least one group is different}\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What is our test then?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We now move to testing with the \(K\) distribution rather than the \(t\)-distribution:</li>
+<li>We use the following test statistic:
+\[ k = \dfrac{\text{Measure of Between-Group Variability}}{\text{Measure of Within-Group Variability}}\] </li>
+<li>How do we calculate these variabilities?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The math</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We calculate the following values:
+
+<ul>
+<li>Between Sum of Squares
+\[SS_B = \sum_{i=1}^k n_i(\bar(y)_i - \bar(y))^2\]</li>
+<li>Within Sum of Squares
+\[SS_W = \sum_{i=1}^k \sum_{j=1}^{n_i} (y_{ij} - \bar(y)_i)^2\]</li>
+<li>Total Sums of Squares
+\[SS = SS_B + SS_W\]</li>
+</ul></li>
+<li>In all of these: \(i\) is the index for \(k\) groups and \(j\) is the index for the \(n_i\) observations in each group. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>ANOVA Variances</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>This is where the analysis of variances comes in, we are comparing the variances:
+
+<ul>
+<li>Between group variability</li>
+<li>Within group variability</li>
+</ul></li>
+<li>Traditionally this test was performed using the following table:</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>ANOVA Table</h2>
+  </hgroup>
+  <article data-timings="">
+    <table><thead>
+<tr>
+<th align="center"></th>
+<th align="center">DF</th>
+<th align="center">Sum Sq.</th>
+<th align="center">Mean Sq</th>
+<th align="center">F value</th>
+<th align="center">Pr(&gt;F)</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">Between (treatment)</td>
+<td align="center">\(k-1\)</td>
+<td align="center">\(SS_{B}\)</td>
+<td align="center">\(MS_{B} = \dfrac{SS_B}{k-1}\)</td>
+<td align="center">\(\frac{MS_{trt}}{MS_{err}}\)</td>
+<td align="center">p-value</td>
+</tr>
+<tr>
+<td align="center">Within (error)</td>
+<td align="center">\(N-k\)</td>
+<td align="center">\(SS_{W}\)</td>
+<td align="center">\(MS_{W} = \dfrac{SS_W}{N-k}\)</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Total</td>
+<td align="center">\(N-1\)</td>
+<td align="center">\(SS_{T}\)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Calculating ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>In a traditional class you would be made to do this by hand</li>
+<li>We won&#39;t do this:
+
+<ol>
+<li>I hate doing it. </li>
+<li>you never do this in real life. </li>
+<li>WE HAVE R!</li>
+</ol></li>
+<li>We will focus on performing this in R. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Data for Class</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We will consider the data behind the story: <a href="http://fivethirtyeight.com/features/women-in-comic-books/">&quot;Comic Books are Still Made By Men, For Men and About Men&quot;</a>.</li>
+<li>This data is part of the <code>fivethirtyeight</code> package:</li>
+<li>To explore the variable names run the following code:</li>
+</ul>
+
+<pre><code class="r">library(fivethirtyeight)
+?comic_characters
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Difference in Appearances by Gender</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Lets consider if the number of appearances of characters is different depending on the gender of the character. </li>
+<li>We could first graph this:</li>
+</ul>
+
+<pre><code class="r">ggplot(comic_characters, aes(x = sex, y = appearances)) +
+  geom_point()  + 
+  geom_point(stat = &quot;summary&quot;, fun.y = &quot;mean&quot;, color = &quot;red&quot;, size = 3)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Difference in Appearances by Gender</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Table of Gender</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can see that this is hard to read, we can see what the groups look like by counting them </li>
+</ul>
+
+<pre><code class="r">comic_characters %&gt;%
+    group_by(sex) %&gt;%
+    tally(sort = TRUE)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Table of Gender</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can see that this is hard to read, we can see what the groups look like by counting them </li>
+</ul>
+
+<pre><code>## # A tibble: 7 x 2
+##   sex                        n
+##   &lt;chr&gt;                  &lt;int&gt;
+## 1 Male Characters        16421
+## 2 Female Characters       5804
+## 3 &lt;NA&gt;                     979
+## 4 Agender Characters        45
+## 5 Genderless Characters     20
+## 6 Genderfluid Characters     2
+## 7 Transgender Characters     1
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Data Cleaning</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can make the names smaller</li>
+</ul>
+
+<pre><code class="r">comic &lt;- comic_characters %&gt;%
+      mutate(sex = fct_recode(sex, 
+      &quot;Agender&quot; = &quot;Agender Characters&quot;,
+      &quot;Female&quot; = &quot;Female Characters&quot;, 
+      &quot;Genderfluid&quot; = &quot;Genderfluid Characters&quot;,
+      &quot;Genderless&quot; = &quot;Genderless Characters&quot;,
+      &quot;Male&quot; = &quot;Male Characters&quot;,
+      &quot;Transgender&quot; = &quot;Transgender Characters&quot;
+      ))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Data Cleaning</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Cleaning Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>we can see that we do not have many people in categories asside from &quot;Male&quot; and &quot;Female&quot;</li>
+<li>This can be a problem with many statistical tests so we can combine categories</li>
+</ul>
+
+<pre><code class="r">comic &lt;- comic_characters %&gt;%
+      mutate(sex = fct_recode(sex, 
+      &quot;Non-Binary&quot; = &quot;Agender Characters&quot;,
+      &quot;Female&quot; = &quot;Female Characters&quot;, 
+      &quot;Non-Binary&quot; = &quot;Genderfluid Characters&quot;,
+      &quot;Non-Binary&quot; = &quot;Genderless Characters&quot;,
+      &quot;Male&quot; = &quot;Male Characters&quot;,
+      &quot;Non-Binary&quot; = &quot;Transgender Characters&quot;
+      ))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Cleaning Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can also see that we have a lot of values that seem to be very high compared to the mean. </li>
+<li>In this case many times we pull in the extreme values with a log transform</li>
+<li>We can do this with mutate</li>
+</ul>
+
+<pre><code class="r">comic &lt;- comic %&gt;%
+    mutate(log_app = log(appearances))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Boxplots</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>we can then try looking at boxplots</li>
+</ul>
+
+<p><img src="assets/fig/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Finally ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>these look a little better now that we have done a log transform</li>
+<li>We can code an ANOVA in r with the following:</li>
+</ul>
+
+<pre><code class="r">aov(log_app~sex, data=comic)
+</code></pre>
+
+<pre><code>## Call:
+##    aov(formula = log_app ~ sex, data = comic)
+## 
+## Terms:
+##                      sex Residuals
+## Sum of Squares    296.09  40225.14
+## Deg. of Freedom        2     20966
+## 
+## Residual standard error: 1.385132
+## Estimated effects may be unbalanced
+## 2303 observations deleted due to missingness
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What can we do to get more information</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Many things in R are stored in objects called lists. </li>
+<li>Lists contain a large amount of objects</li>
+</ul>
+
+<pre><code class="r">my_anova &lt;- aov(log_app~sex, data=comic)
+names(my_anova)
+</code></pre>
+
+<pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;         
+##  [5] &quot;fitted.values&quot; &quot;assign&quot;        &quot;qr&quot;            &quot;df.residual&quot;  
+##  [9] &quot;na.action&quot;     &quot;contrasts&quot;     &quot;xlevels&quot;       &quot;call&quot;         
+## [13] &quot;terms&quot;         &quot;model&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Summary</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The summary function works with anova and many other functions to give us a basic summary</li>
+</ul>
+
+<pre><code class="r">summary(my_anova)
+</code></pre>
+
+<pre><code>##                Df Sum Sq Mean Sq F value Pr(&gt;F)    
+## sex             2    296  148.05   77.16 &lt;2e-16 ***
+## Residuals   20966  40225    1.92                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 2303 observations deleted due to missingness
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What were we testing again?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Recall our hypothesis:
+\[ H_0: \mu_1 = \mu_2 = \cdots = \mu_k\] 
+\[ \text{At least one group is different}\]</li>
+<li>What can we say about these groups?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What is Next?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Now that we know there is a difference, we need to find out what difference that is. </li>
+<li>This does leave us with a multiple testing problem. </li>
+<li>Previously it was mentioned that performing multiple hypothesis tests we have problems with the type 1 error. </li>
+<li>Type 1 error is the error of making a mistake by rejecting the null hypothesis when you shouldn&#39;t have. </li>
+<li>This means that if we perform 20 studies we can assume that we made a mistake on 5% of them or 1 of them will be significant and lead to rejecting the null hypothesis. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What about Multiple Testing</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>When we perform 20 tests on the same data what we have is:
+\[\begin{align*}
+\Pr(\text{At least 1 Significant Result}) &= 1 - \Pr(\text{No Significant Results})\\
+&= 1 - \left( 1-0.05\right)^{20}\\
+& = 0.6415141
+\end{align*}\]</li>
+<li>We call this the <strong>Family Wise Error Rate (FWER)</strong></li>
+<li>So now we have around 13 tests that we would be making a mistake on. </li>
+<li>On Friday, this will be covered more thoroughly. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What Type of Multiple Tests for ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We need to control the FWER so that \(\text{FWER}\le0.05\). </li>
+<li>There are various methods out there:
+
+<ul>
+<li>Bonferroni Method</li>
+<li>Tukey HSD</li>
+<li>Holm, Hommel, Dunnett, Šidák , ...</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Bonferroni  Correction</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider the problem of testing \(n\) different tests. - We can do the Bonferroni in 2 different ways:
+
+<ul>
+<li>Adjust the significance level
+\[ \alpha^*  = \dfrac{\alpha}{n}\]</li>
+<li>Bonferroni Correct p-values
+\[\text{min}\left[2\times\binom{k}{2}\times \Pr\left(\mid t\mid < t_{n-k}\right),1\right]\]</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Bonferroni  Correction</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>If we have \(n=20\) then i we wish to control the FWER at \(\alpha=0.05\), then we have
+\[\alpha^* = \dfrac{\alpha}{n}= \dfrac{0.05}{20}=0.0025\]</li>
+<li>What does this mean for the FWER:
+\[\begin{align*}
+\Pr(\text{At least 1 Significant Result}) &= 1 - \Pr(\text{No Significant Results})\\
+&= 1 - \left( 1-0.0025\right)^{20}\\
+& = 0.04883012
+\end{align*}\]</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Bonferonni in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can perform multiple t-tests in R using:
+<code>
+pairwise.t.test(x,g,p.adjust.method,...)
+</code></li>
+<li>Where
+
+<ul>
+<li><code>x</code> is the response vector</li>
+<li><code>g</code> is the grouping factor</li>
+<li><code>p.adjust.method</code> is p-value adjustment</li>
+<li><code>...</code> Others you can see in r</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Bonferonni in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Perform multiple tests</li>
+</ul>
+
+<pre><code class="r">attach(comic)
+pairwise.t.test(log_app,sex, p.adjust=&quot;none&quot;)
+detach()
+</code></pre>
+
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  log_app and sex 
+## 
+##        Non-Binary Female
+## Female 0.1283     -     
+## Male   0.0023     &lt;2e-16
+## 
+## P value adjustment method: none
+</code></pre>
+
+<ul>
+<li>Remember to compare vs \(\alpha=0.0025\)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Bonferonni in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Or correct for Bonferroni in the p-values</li>
+</ul>
+
+<pre><code class="r">attach(comic)
+pairwise.t.test(log_app,sex, p.adjust=&quot;bonferroni&quot;)
+detach()
+</code></pre>
+
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  log_app and sex 
+## 
+##        Non-Binary Female
+## Female 0.3850     -     
+## Male   0.0069     &lt;2e-16
+## 
+## P value adjustment method: bonferroni
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Tukey HSD Test</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>This is called the Tuker Honest Significant Difference (HSD) test.</li>
+<li>This creates a set of confidence intervals and adjust p-values based on the <em>studentized range distribution</em>. </li>
+<li>Tukey&#39;s is usually preferred in ANOVA as it is less conservative that Bonferroni and in many cases yields and exact correction. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Tukey HSD in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">TukeyHSD(my_anova, conf.level=0.95)
+</code></pre>
+
+<pre><code>##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = log_app ~ sex, data = comic)
+## 
+## $sex
+##                         diff        lwr        upr     p adj
+## Female-Non-Binary -0.2648371 -0.6730209  0.1433466 0.2811377
+## Male-Non-Binary   -0.5292183 -0.9358797 -0.1225569 0.0064760
+## Male-Female       -0.2643812 -0.3154401 -0.2133222 0.0000000
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Results</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>What can we confirm from these tests?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>There are assumptions made for every statistical method.</li>
+<li>The assumptions of ANOVA are:
+
+<ul>
+<li>Independent groups</li>
+<li>Homogeneity of Variances</li>
+<li>Normality of residuals</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We test the first assumption of independence by considering the data and how it was collected.</li>
+<li>In our position each character only has one sex listed and they are not in other categories, thus the groups are independent. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>For testing the Homogeneity of variances we do the following:
+
+<ul>
+<li>Plot the Residuals</li>
+<li>Perform levene test
+\[\sigma^2_1=\sigma^2_2=\cdots=\sigma^2_k\]
+\[\text{at least one variance is different}\]</li>
+</ul></li>
+</ul>
+
+<pre><code class="r">plot(my_anova, 1)
+
+library(car)
+leveneTest(log_app~sex, data = comic)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
+##          Df F value Pr(&gt;F)
+## group     2  0.1827 0.8331
+##       20966
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What if we do not have Homoscedastic Variances?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can relax this assumption by using a non-pooled variance:</li>
+</ul>
+
+<pre><code class="r">attach(comic)
+pairwise.t.test(log_app,sex, p.adjust=&quot;bonferroni&quot;, pool.sd=FALSE)
+detach()
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>For testing the normality of residuals we do the following:
+
+<ul>
+<li>Plot the Residuals</li>
+<li>Perform Shapiro-Wilk test
+\[\text{Population is Normally Distributed}\]
+\[\text{Population is not Normally Distributed}\]</li>
+</ul></li>
+</ul>
+
+<pre><code class="r">plot(my_anova, 2)
+
+
+#install.packages(&quot;nortest&quot;)
+library(nortest)
+lillie.test(my_anova_resid)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-22-1.png" alt="plot of chunk unnamed-chunk-22"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions of ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## Error in sort(x[complete.cases(x)]): object &#39;my_anova_resid&#39; not found
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What is Normality is not met?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>This requires a non-parametric test. </li>
+<li>We will cover this next week. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="segue" id="slide-46" style="background:grey;">
+  <hgroup>
+    <h1>Questions</h1>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="segue" id="slide-47" style="background:grey;">
+  <hgroup>
+    <h1>Lab Time</h1>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='What is ANOVA?'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Recap on our progress:'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Enter ANOVA'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Enter ANOVA'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Enter ANOVA'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='What is our test then?'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='The math'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='ANOVA Variances'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='ANOVA Table'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Calculating ANOVA'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='The Data for Class'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Difference in Appearances by Gender'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Difference in Appearances by Gender'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Table of Gender'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Table of Gender'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Data Cleaning'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Data Cleaning'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Cleaning Data'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Cleaning Data'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='Boxplots'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='Finally ANOVA'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='What can we do to get more information'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='Summary'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='What were we testing again?'>
+         24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='What is Next?'>
+         25
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=26 title='What about Multiple Testing'>
+         26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='What Type of Multiple Tests for ANOVA'>
+         27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='The Bonferroni  Correction'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='The Bonferroni  Correction'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='Bonferonni in R'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='Bonferonni in R'>
+         31
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=32 title='Bonferonni in R'>
+         32
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=33 title='Tukey HSD Test'>
+         33
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=34 title='Tukey HSD in R'>
+         34
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=35 title='Results'>
+         35
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=36 title='Assumptions of ANOVA'>
+         36
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=37 title='Testing Assumptions of ANOVA'>
+         37
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=38 title='Testing Assumptions of ANOVA'>
+         38
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=39 title='Testing Assumptions of ANOVA'>
+         39
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=40 title='Testing Assumptions of ANOVA'>
+         40
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=41 title='What if we do not have Homoscedastic Variances?'>
+         41
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=42 title='Testing Assumptions of ANOVA'>
+         42
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=43 title='Testing Assumptions of ANOVA'>
+         43
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=44 title='Testing Assumptions of ANOVA'>
+         44
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=45 title='What is Normality is not met?'>
+         45
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=46 title='Questions'>
+         46
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=47 title='Lab Time'>
+         47
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/quiz/js/jquery.quiz.js"></script>
+<script src="libraries/widgets/quiz/js/mustache.min.js"></script>
+<script src="libraries/widgets/quiz/js/quiz-app.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+<script src="libraries/widgets/interactive/js/ace/js/ace.js"></script>
+<script src="libraries/widgets/interactive/js/opencpu-0.5.js"></script>
+<script src="libraries/widgets/interactive/js/interactive.js"></script>
+
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
