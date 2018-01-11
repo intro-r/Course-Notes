@@ -12,3 +12,7 @@ stringr
 forcats
 fivethirtyeight
 bindrcpp
+rmarkdown
+knitr
+car
+nortest
