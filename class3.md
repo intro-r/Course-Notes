@@ -641,7 +641,7 @@ lillie.test(my_anova_resid)
 
 --- .class #id
 
-## What is Normality is not met?
+## What if Normality is not met?
 
 - This requires a non-parametric test. 
 - We will cover this next week. 
