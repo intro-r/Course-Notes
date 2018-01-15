@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Introduction to Statistics in R</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Introduction to Statistics in R">
+  <meta name="author" content="Adam J Sullivan">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/solarized.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/quiz/css/demo.css"></link>
+<link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+<link rel=stylesheet href="libraries/widgets/interactive/css/aceeditor.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+      <slide class="nobackground">
+    <article class="flexbox vcenter">
+      <span>
+        <img width='300px' src="assets/img/shield_image_large2.png">
+      </span>
+    </article>
+  </slide>
+    <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/bcbi_small.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>Introduction to Statistics in R</h1>
+    <h2>Day 5 - Linear Regression</h2>
+    <p>Adam J Sullivan<br/></p>
+  </hgroup>
+  <article></article>  
+  <footer class = 'license'>
+    <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>
+    <img width = '80px' src = 'http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-nd.png'>
+    </a>
+  </footer>
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="segue" id="slide-1" style="background:grey;">
+  <hgroup>
+    <h1>Linear Regression</h1>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Outline</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>One Categorical Covariate</li>
+<li>One Continuous Covariate</li>
+<li>Regression Assumptions and Diagnostics</li>
+<li>Automated Regression Techniques</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Data: Wisconsin Prognostic Breast Cancer Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Each record represents follow-up data for one breast cancer case. </li>
+<li>These are consecutive patients seen by Dr. Wolberg since 1984, and include only those cases exhibiting invasive breast cancer and no evidence of distant metastases at the time of diagnosis.</li>
+<li>Getting Data:</li>
+</ul>
+
+<pre><code>#install.packages(&quot;Th.data&quot;)
+library(TH.data)
+?wpbc
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="segue" id="slide-4" style="background:grey;">
+  <hgroup>
+    <h1>One Categorical Covariate - Binary</h1>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Binary Covariate</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>With this type of covariate, we are comparing some outcome against 2 different groups. </li>
+<li>In order to make these comparisons it depends on the outcome we are working with. </li>
+<li>We will perform these tests based on the outcome and then use confidence intervals to assess. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Differences in Time by Status</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Let&#39;s consider the difference in time based on the 2 statuses</li>
+</ul>
+
+<pre><code class="r">library(TH.data)
+library(tidyverse)
+
+cnt &lt;- wpbc %&gt;% 
+  group_by(status) %&gt;%
+  tally()
+mn&lt;- wpbc %&gt;% 
+  group_by(status) %&gt;%
+  summarise(mean_time=mean(time))
+full_join(cnt,mn)
+</code></pre>
+
+<pre><code>## # A tibble: 2 x 3
+##   status     n mean_time
+##   &lt;fctr&gt; &lt;int&gt;     &lt;dbl&gt;
+## 1 N        151      53.5
+## 2 R         47      25.1
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Differences in Time by Status</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We have learned how to do this previously. </li>
+<li>We first did this comparison with a t-test</li>
+<li>Then we did this with an F-test in ANOVA</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Time by Status: t-test</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider this with a t-test</li>
+</ul>
+
+<pre><code class="r">t.test(time~status, data=wpbc)
+</code></pre>
+
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  time by status
+## t = 6.514, df = 118.26, p-value = 1.865e-09
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  19.75618 37.01401
+## sample estimates:
+## mean in group N mean in group R 
+##        53.47020        25.08511
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Time by Status: ANOVA</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider with ANOVA</li>
+</ul>
+
+<pre><code class="r">library(broom)
+tidy(aov(time~status, data=wpbc))
+</code></pre>
+
+<pre><code>##        term  df     sumsq    meansq statistic      p.value
+## 1    status   1  28879.54 28879.538  27.59883 3.874707e-07
+## 2 Residuals 196 205095.28  1046.404        NA           NA
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>ANOVA vs t-test</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>t-test and ANOVA should give us the same results.</li>
+<li>We can see that in our output this is not true. </li>
+<li>What were the assumptions of ANOVA?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Time by Status: t-test</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider this with a t-test</li>
+</ul>
+
+<pre><code class="r">t.test(time~status, data=wpbc, var.equal=TRUE)
+</code></pre>
+
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  time by status
+## t = 5.2535, df = 196, p-value = 3.875e-07
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  17.72937 39.04082
+## sample estimates:
+## mean in group N mean in group R 
+##        53.47020        25.08511
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Linear Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">model &lt;- lm(time~status, data=wpbc)
+tidy(model)
+glance(model)
+</code></pre>
+
+<pre><code>##          term  estimate std.error statistic      p.value
+## 1 (Intercept)  53.47020  2.632457 20.311897 4.140665e-50
+## 2     statusR -28.38509  5.403125 -5.253459 3.874707e-07
+##   r.squared adj.r.squared    sigma statistic      p.value df    logLik
+## 1 0.1234301     0.1189578 32.34818  27.59883 3.874707e-07  2 -968.3032
+##        AIC      BIC deviance df.residual
+## 1 1942.606 1952.471 205095.3         196
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>One Binary Categorical Variable - Continuous Outcome</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can perform
+
+<ul>
+<li>t-test with equal variances</li>
+<li>ANOVA</li>
+<li>Linear Regression</li>
+</ul></li>
+<li>All yield the same exact results</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Assumptions of Linear Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><strong><em>Linearity:</em></strong> Function \(f\) is linear. </li>
+<li>Mean of error term is 0. 
+\[E(\varepsilon)=0\]</li>
+<li><strong><em>Independence:</em></strong> Error term is independent of covariate. 
+\[Corr(X,\varepsilon)=0\]</li>
+<li><strong><em>Homoscedacity:</em></strong> Variance of error term is same regardless of value of \(X\). 
+\[Var(\varepsilon)=\sigma^2\]</li>
+<li><strong><em>Normality:</em></strong> Errors are normally Distributed</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Example: Worst Area and Time</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider the effect of worst Area on time. </li>
+<li>With categorical data we plotted this with box-whisker plots. </li>
+<li>We can now use a scatter plot</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Scatter Plot: Worst Area and Time</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Scatter Plot: Worst Area and Time</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Modeling What We See</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Now that we think there might be a relationship, our goal is to model this. </li>
+<li>How can we do this? </li>
+<li>How does linear regression work?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Population Regression Line</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We have hypothesized that as worst area increases, time decreases.</li>
+<li>We can see from the scatter plot that it appears we could have a linear relationship.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>How do we Quantify this?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>One way we could quantify this is
+\[\mu_{y|x} = \beta_0 + \beta_1X\]</li>
+<li>where
+
+<ul>
+<li>\(\mu_{y|x}\) is the mean time for those whose worst area is \(x\). </li>
+<li>\(\beta_0\) is the \(y\)-intercept (mean value of \(y\) when \(x=0\), \(\mu_y|0\))</li>
+<li>\(\beta_1\) is the slope (change in mean value of \(Y\) corresponding to 1 unit increase in \(x\)).</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Population Regression Line</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>With the population regression line we have that the distribution of time for those at a particular worst area, \(x\), is approximately normal with mean, \(\mu_{y|x}\), and standard deviation, \(\sigma_{y|x}\). </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Population Regression Line</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="./assets/img/pic1.png" alt="Distribution of Y and different levels of X."></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Population Regression Line</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>This shows the scatter about the mean due to natural variation. To accommodate this scatter we fit a regression model with 2 parts:
+
+<ul>
+<li>Systematic Part</li>
+<li>Random Part</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>This leads to the model
+\[Y = \beta_0 + \beta_1X + \varepsilon\]</li>
+<li>Where \(\beta_0+\beta_1X\) is the systematic part of the model and implies that \[E(Y|X=x) = \mu_{y|x} = \beta_0 + \beta_1x\]</li>
+<li>the variation part where we have \(\varepsilon\sim N(0,\sigma^2)\) which is independent of \(X\). </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What do We Have?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Consider the scenario where we have \(n\) subjects and for each subject we have the data points \((x,y)\). </li>
+<li>This leads to us having data in the form \((X_i,Y_i)\) for \(i=1,\ldots,n\).</li>
+<li>Then we have the model:
+\[Y_i = \beta_0 + \beta_1X_i + \varepsilon_i\]</li>
+<li>\(Y_i|X_i \sim N\left(\beta_0 + \beta_1X_i , \sigma^2\right)\)</li>
+<li>\(E(Y_i|X_i) = \mu_{y|x} = \beta_0 + \beta_1X_i\)</li>
+<li>\(Var(Y|X_i ) = \sigma^2\)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Picture of this</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What Does This Tell Us?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can refer back to our scatter plot now and discuss what is the &quot;best&quot; line. </li>
+<li>Given the previous image we can see that a good estimator would somehow have smaller residual errors. </li>
+<li>So the &quot;best&quot; line would minimize the errors. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Residual Errors</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>In Comes Least Squares</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The least squares estimator of regression coefficients in the estimator that minimizes the sum of squared errors.</li>
+<li>We denote these estimators as \(\hat{\beta}_0\) and \(\hat{\beta}_1\). </li>
+<li>In other words we attempt to minimize 
+\[\sum_{i=1}^n \left(\varepsilon_i\right)^2 = \sum_{i=1}^n \left(Y_i - \hat{\beta}_0 - \hat{\beta}_1X_i\right)^2\]</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Inferences on OLS</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Once we have our intercept and slope estimators the next step is to determine if they are significant or not. </li>
+<li>Typically with hypothesis testing we have needed the following:
+
+<ul>
+<li>Population/Assumed Value of interest</li>
+<li>Estimated value</li>
+<li>Standard error of Estimate</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Confidence Interval Creation</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>with 95% confidence intervals of
+\[\hat{\beta}_1 \pm t_{n-2, 0.975} \cdot se\left(\hat{\beta}_1\right)\]
+\[\hat{\beta}_0 \pm t_{n-2, 0.975} \cdot se\left(\hat{\beta}_0\right)\]</li>
+<li>In general we can find a  \(100(1-\alpha)\%\) confidence interval as
+\[\hat{\beta}_1 \pm t_{n-2, 1-\dfrac{\alpha}{2}} \cdot se\left(\hat{\beta}_1\right)\]
+\[\hat{\beta}_0 \pm t_{n-2, 1-\dfrac{\alpha}{2}} \cdot se\left(\hat{\beta}_0\right)\]</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Example: worst area and time</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">model &lt;- lm(time~worst_area, data=wpbc)
+tidy(model, conf.int=TRUE)[,-c(3:4)]
+glance(model)
+</code></pre>
+
+<pre><code>##          term    estimate      p.value    conf.low    conf.high
+## 1 (Intercept) 67.71330207 4.372924e-22 55.52018208 79.906422051
+## 2  worst_area -0.01493352 3.063922e-04 -0.02294634 -0.006920707
+##    r.squared adj.r.squared    sigma statistic      p.value df    logLik
+## 1 0.06448031    0.05970725 33.41819  13.50922 0.0003063922  2 -974.7466
+##        AIC      BIC deviance df.residual
+## 1 1955.493 1965.358   218888         196
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interpreting the Coefficients</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Before we can discuss the regression coefficients we need to understand how to interpret what these coefficients mean. </li>
+<li> \(\beta_0\) is mean value for \(Y\) when \(X=0\).</li>
+<li>\(\beta_1\) is the mean change in \(Y\) when you increase \(X\) by one unit. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interpreting the Coefficients</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We consider \(\beta_0\) first. </li>
+<li>Does this value have meaning with our current data? 
+
+<ul>
+<li>The estimated value of time level is only applicable to worst area within the range of our data. </li>
+<li>Many times the intercept is scientifically meaningless. </li>
+<li>Even if meaningless on its own, \(\beta_0\) is necessary to specify the equation of our regression line. </li>
+<li><strong>Note:</strong> People do sometimes use mean centered data and the intercept is then interpretable.</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interpreting the Coefficients</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Then we consider \(\beta_1\) to see the meaning of this we do the following
+\[
+\begin{aligned}
+E(Y|X=x+1) - E(Y|X=x) &= \beta_0 + \beta_1(x+1) - \beta_0 - \beta_1x\\
+&= \beta_1
+\end{aligned}
+\]</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interpreting the Coefficients</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>This gives us the interpretation that \(\beta_1\) represents the mean change in outcome \(Y\) given a one unit increase in predictor \(X\). </li>
+<li>This is not an actual prescription though, this is considering different subjects or groups of subjects who differ by one unit. </li>
+<li>Below are correct interpretations of \(\beta_1\) in our example. 
+
+<ul>
+<li><em>These results display that the mean difference in time for 2 subjects differing in worst area by 1  is -0.015</em></li>
+<li><em>These results display that the mean difference in time for 2 subjects differing in worst area by 1000  is -14.93</em></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Multiple Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We have been discussing simple models so far. </li>
+<li>This works well when you have:
+
+<ul>
+<li>Randomized Data to test between specific groups (Treatment vs Control)</li>
+</ul></li>
+<li>In most situations we need look at more than just one relationship. </li>
+<li>Think of this as needing more information to tell the entire story. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Motivating Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Health disparities are very real and exist across individuals and populations. </li>
+<li>Before developing methods of remedying these disparities we need to be able to identify where there are disparities.In this homework we will consider a study by <a href="http://www.ncbi.nlm.nih.gov/pubmed/17513818">(Asch &amp; Armstrong, 2007)</a>.<br></li>
+<li>This paper considers 222 patients with localized prostate cancer. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Motivating Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The table below partitions patients by race, hospital and whether or not the patient received a prostatectomy. </li>
+</ul>
+
+<table><thead>
+<tr>
+<th></th>
+<th>Race</th>
+<th>Prostatectomy</th>
+<th>No Prostatectomy</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>University Hospital</td>
+<td>White</td>
+<td>54</td>
+<td>37</td>
+</tr>
+<tr>
+<td></td>
+<td>Black</td>
+<td>7</td>
+<td>5</td>
+</tr>
+<tr>
+<td>VA Hospital</td>
+<td>White</td>
+<td>11</td>
+<td>29</td>
+</tr>
+<tr>
+<td></td>
+<td>Black</td>
+<td>22</td>
+<td>57</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Loading the Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>You can load this data into R with the code below:</p>
+
+<pre><code class="r">phil_disp &lt;- read.table(&quot;https://drive.google.com/uc?export=download&amp;id=0B8CsRLdwqzbzOXlIRl9VcjNJRFU&quot;, header=TRUE, sep=&quot;,&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>This dataset contains the following variables: </p>
+
+<table><thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>hospital</td>
+<td>0 - University Hospital</td>
+</tr>
+<tr>
+<td></td>
+<td>1 - VA Hospital</td>
+</tr>
+<tr>
+<td>race</td>
+<td>0 - White</td>
+</tr>
+<tr>
+<td></td>
+<td>1 - Black</td>
+</tr>
+<tr>
+<td>surgery</td>
+<td>0 - No prostatectomy</td>
+</tr>
+<tr>
+<td></td>
+<td>1 - Had Prostatectomy</td>
+</tr>
+<tr>
+<td>number</td>
+<td>Count of people in Category</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Consider Prostatectomy by Race</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">prost_race &lt;- glm(surgery ~ race, weight=number, data= phil_disp,
+                  family=&quot;binomial&quot;)
+tidy(prost_race, exponentiate=T, conf.int=T)[,-c(3:4)]
+</code></pre>
+
+<pre><code>##          term  estimate     p.value  conf.low conf.high
+## 1 (Intercept) 0.9848485 0.930377767 0.6985457 1.3880778
+## 2        race 0.4749380 0.008953745 0.2694239 0.8250258
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Consider Prostatectomy by Race</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>What can we conclude? </li>
+<li>What kind of policy might we want to invoke based on this discovery?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Consider Prostatectomy by Hospital</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">prost_hosp &lt;- glm(surgery ~ hospital, weight=number, data= phil_disp,
+                  family=&quot;binomial&quot;)
+tidy(prost_hosp, exponentiate =T, conf.int=T)[,-c(3:4)]
+</code></pre>
+
+<pre><code>##          term  estimate      p.value  conf.low conf.high
+## 1 (Intercept) 1.4523810 6.270112e-02 0.9838382 2.1646297
+## 2    hospital 0.2642013 3.409565e-06 0.1492365 0.4598822
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Consider Prostatectomy by Hospital</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>What can we conclude? </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Multiple Regression of Prostatectomy</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">prost &lt;- glm(surgery ~ hospital + race, weight=number, data= phil_disp,
+             family=&quot;binomial&quot;)
+tidy(prost, exponentiate=T, conf.int=T)[,-c(3:4)]
+</code></pre>
+
+<pre><code>##          term  estimate   p.value  conf.low conf.high
+## 1 (Intercept) 1.4526892 0.0681969 0.9758192 2.1830747
+## 2    hospital 0.2644648 0.0001241 0.1313651 0.5145046
+## 3        race 0.9981802 0.9959191 0.5006556 2.0381436
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Multiple Regression of Prostatectomy</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>What can We conclude?</li>
+<li>What happened here?</li>
+<li>Does this change our policy suggestion from before?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Benefits of Multiple Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Multiple Regression helps us tell a more complete story. </li>
+<li>Multiple regression controls for confounding. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Confounding</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Associated with both the Exposure and the Outcome</li>
+<li>Even if the Exposure and Outcome are not related, unmeasured confounding can show that they are. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What Do We Do with Confounding?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We must add all confounders into our model. </li>
+<li>Without adjusting for confounders are results may be highly biased. </li>
+<li>Without adjusting for confounding we may make incorrect policies that do not fix the problem. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Multiple Linear Regression with WPBC</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Lets begin with 2 Categorical Variables
+
+<ul>
+<li><code>status</code></li>
+<li><code>Tumor Size</code></li>
+</ul></li>
+<li>First start with univariate models</li>
+<li>Then perform the multiple model</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Binary Tumor Size</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We will create a binary tumor size of being either greater than or less than the median tumor size.</li>
+</ul>
+
+<pre><code class="r">wpbc &lt;- wpbc %&gt;% 
+    mutate(tsize_bin = tsize &gt; median(tsize))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Univariate Models</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">mod1 &lt;- lm(time~status, data=wpbc)
+mod2 &lt;- lm(time~tsize_bin, data=wpbc)
+tidy1 &lt;- tidy(mod1, conf.int=T)[,-c(3:4)]
+tidy2 &lt;- tidy(mod2, conf.int=T)[,-c(3:4)]
+rbind(tidy1, tidy2)
+</code></pre>
+
+<pre><code>##            term  estimate      p.value  conf.low   conf.high
+## 1   (Intercept)  53.47020 4.140665e-50  48.27862  58.6617760
+## 2       statusR -28.38509 3.874707e-07 -39.04082 -17.7293675
+## 3   (Intercept)  51.41818 8.745751e-37  44.99729  57.8390701
+## 4 tsize_binTRUE -10.54318 3.207675e-02 -20.17451  -0.9118494
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Multivariate Models</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">mod3 &lt;- lm(time~status + tsize_bin, data=wpbc)
+tidy3 &lt;- tidy(mod3, conf.int=T)[,-c(3:4)]
+tidy3
+</code></pre>
+
+<pre><code>##            term   estimate      p.value  conf.low  conf.high
+## 1   (Intercept)  55.588337 1.706022e-41  49.28156  61.895119
+## 2       statusR -26.983360 2.212904e-06 -37.89126 -16.075458
+## 3 tsize_binTRUE  -5.514465 2.456715e-01 -14.85434   3.825408
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Testing Assumptions</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-19-1.png" alt="plot of chunk unnamed-chunk-19"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Assumptions</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Seems to be linear</li>
+<li>seems to be homoscedastic</li>
+<li>Normality seems good</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interpretations</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>For two people with the same level of tumor size, the person who recurs has 26 less weeks on average. </li>
+<li>For two people with the same satus, the person with a tumor size greater than the median has approximately 5.5 less weeks than the person with tumor size less than median. </li>
+<li><em>Intercept</em> - For a person who does not have recurrence and has a tumor less than median, the average number of weeks was 55. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interpretations</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Interpretations hold all other values to be the same and the consider a one unit change in the value of interest. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h1>Variable Selection</h1>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We have discussed what linear regression is and how to check the assumptions and evaluate the model we have. </li>
+<li>A key issue remains still and that is how do we appropriately build a good model for the data? </li>
+<li>How do we select the variables that we wish to include in this &quot;good&quot; model?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>All Subsets Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>There are a number of methods for choosing variable selection. </li>
+<li>Let us consider systolic blood pressure again. </li>
+<li>This time we will brainstorm what all might predict a persons systolic blood pressure</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Leaps Package</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">###################
+##     RUN THIS IN R FOR CLASS    ##
+###################
+
+ library(leaps)
+ leaps &lt;- regsubsets(time~ ., force.in=1,data=wpbc, nbest=1)
+summary(leaps)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <pre><code>##   (Intercept) statusR mean_radius mean_texture mean_perimeter mean_area
+## 2        TRUE    TRUE       FALSE         TRUE          FALSE     FALSE
+## 3        TRUE    TRUE       FALSE         TRUE           TRUE     FALSE
+## 4        TRUE    TRUE       FALSE         TRUE          FALSE     FALSE
+## 5        TRUE    TRUE       FALSE        FALSE           TRUE     FALSE
+## 6        TRUE    TRUE       FALSE        FALSE           TRUE     FALSE
+## 7        TRUE    TRUE       FALSE        FALSE           TRUE     FALSE
+## 8        TRUE    TRUE       FALSE        FALSE           TRUE     FALSE
+##   mean_smoothness mean_compactness mean_concavity mean_concavepoints
+## 2           FALSE            FALSE          FALSE              FALSE
+## 3           FALSE            FALSE          FALSE              FALSE
+## 4           FALSE            FALSE          FALSE              FALSE
+## 5           FALSE            FALSE          FALSE              FALSE
+## 6           FALSE            FALSE          FALSE              FALSE
+## 7           FALSE            FALSE          FALSE              FALSE
+## 8           FALSE            FALSE          FALSE              FALSE
+##   mean_symmetry mean_fractaldim SE_radius SE_texture SE_perimeter SE_area
+## 2         FALSE           FALSE     FALSE      FALSE        FALSE   FALSE
+## 3         FALSE           FALSE     FALSE      FALSE        FALSE   FALSE
+## 4         FALSE           FALSE     FALSE      FALSE        FALSE   FALSE
+## 5         FALSE           FALSE     FALSE      FALSE        FALSE   FALSE
+## 6         FALSE           FALSE     FALSE      FALSE        FALSE    TRUE
+## 7         FALSE           FALSE     FALSE      FALSE        FALSE   FALSE
+## 8         FALSE           FALSE     FALSE      FALSE        FALSE    TRUE
+##   SE_smoothness SE_compactness SE_concavity SE_concavepoints SE_symmetry
+## 2         FALSE          FALSE        FALSE            FALSE       FALSE
+## 3         FALSE          FALSE        FALSE            FALSE       FALSE
+## 4         FALSE          FALSE        FALSE            FALSE       FALSE
+## 5         FALSE          FALSE        FALSE            FALSE       FALSE
+## 6         FALSE          FALSE        FALSE            FALSE       FALSE
+## 7          TRUE          FALSE         TRUE            FALSE       FALSE
+## 8          TRUE          FALSE        FALSE            FALSE       FALSE
+##   SE_fractaldim worst_radius worst_texture worst_perimeter worst_area
+## 2         FALSE        FALSE         FALSE           FALSE      FALSE
+## 3         FALSE        FALSE         FALSE           FALSE      FALSE
+## 4         FALSE        FALSE         FALSE           FALSE      FALSE
+## 5         FALSE         TRUE          TRUE           FALSE      FALSE
+## 6          TRUE         TRUE          TRUE           FALSE      FALSE
+## 7         FALSE         TRUE          TRUE           FALSE      FALSE
+## 8         FALSE         TRUE          TRUE           FALSE      FALSE
+##   worst_smoothness worst_compactness worst_concavity worst_concavepoints
+## 2            FALSE             FALSE           FALSE               FALSE
+## 3            FALSE             FALSE           FALSE               FALSE
+## 4            FALSE             FALSE            TRUE               FALSE
+## 5            FALSE             FALSE           FALSE               FALSE
+## 6            FALSE             FALSE           FALSE               FALSE
+## 7            FALSE             FALSE           FALSE               FALSE
+## 8            FALSE             FALSE            TRUE               FALSE
+##   worst_symmetry worst_fractaldim tsize pnodes tsize_binTRUE
+## 2          FALSE            FALSE FALSE  FALSE         FALSE
+## 3          FALSE            FALSE FALSE  FALSE         FALSE
+## 4          FALSE             TRUE FALSE  FALSE         FALSE
+## 5          FALSE             TRUE FALSE  FALSE         FALSE
+## 6          FALSE            FALSE FALSE  FALSE         FALSE
+## 7          FALSE             TRUE FALSE  FALSE         FALSE
+## 8          FALSE             TRUE FALSE  FALSE         FALSE
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h1>What do We see?</h1>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can then see what variables would be in the best model subset from a subset of size 1 up to 8.</li>
+<li>A quick look into this function and we find that we can also find out a number of other pieces of information. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What Else does Leaps give?</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">names(summ)
+</code></pre>
+
+<pre><code>## [1] &quot;which&quot;  &quot;rsq&quot;    &quot;rss&quot;    &quot;adjr2&quot;  &quot;cp&quot;     &quot;bic&quot;    &quot;outmat&quot; &quot;obj&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Useful Information</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We can then see that
+
+<ul>
+<li><strong><em>summ$adjr2</em></strong>  would give us a vector with the \(R^2_{adj}\) value for each of the 8 models. </li>
+<li><strong><em>summ$bic</em></strong> would give us a vector with all of the BIC for each of the 8 models. </li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Using \(R^2_{adj}\)</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We could then use these to create a table of values we care about for model selection. </li>
+<li>We could also graph  \(R^2_{adj}\):</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Using \(R^2_{adj}\)</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(car)
+# Adjusted R2
+res.legend &lt;- subsets(leaps, statistic=&quot;adjr2&quot;, legend = FALSE, min.size = 3,
+main = &quot;Adjusted R^2&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-23-1.png" alt="plot of chunk unnamed-chunk-23"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>\(R^2_{adj}\) Plot</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Finally we could create one more plot with \(R^2_{adj}\)</li>
+</ul>
+
+<pre><code class="r">plot(leaps, scale=&quot;adjr2&quot;, main=&quot;&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-24-1.png" alt="plot of chunk unnamed-chunk-24"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Methods to Automatically Build Models</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We tend to build models in 3 different fashions
+
+<ul>
+<li><strong><em>Subset Selection</em></strong>: This approach identifies a subset of the <em>p</em> predictors that we believe to be related to the response. We then fit a model using the least squares of the subset features.</li>
+<li> * <strong><em>Regularization</em></strong>. This approach fits a model involving all <em>p</em> predictors, however, the estimated coefficients are shrunken towards zero relative to the least squares estimates. This regularization, AKA <em>shrinkage</em> has the effect of reducing variance. Depending on what type of shrinkage is performed, some of the coefficients may be estimated to be exactly zero. Thus this method also performs variable selection.</li>
+<li><strong><em>Dimension Reduction</em></strong>: This approach involves projecting the <em>p</em> predictors into an <em>M</em>-dimensional subspace, where <em>M</em> &lt; <em>p</em>. This is attained by computing <em>M</em> different <em>linear combinations</em>, or <em>projections</em>, of the variables. Then these <em>M</em> projections are used as predictors to fit a linear regression model by least squares.</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Subset Selection</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Best Subset Selection</li>
+<li>Stepwise Selection
+Besides computational issues, the <em>best subset</em> procedure also can suffer from statistical problems when <em>p</em> is large, since we have a greater chance of overfitting.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <article data-timings="">
+    <ul>
+<li>Stepwise Selection Techniques
+
+<ul>
+<li><em>Forward Stepwise Selection</em> considers a much smaller subset of <em>p</em> predictors. It begins with a model containing no predictors, then adds predictors to the model, one at a time until all of the predictors are in the model. The order of the variables being added is the variable, which gives the greatest addition improvement to the fit, until no more variables improve model fit using cross-validated prediction error. 
+
+<ul>
+<li>A <em>best subset</em> model for <em>p</em> = 20 would have to fit 1 048 576 models, where as forward step wise only requires fitting 211 potential models. However, this method is not guaranteed to find the model. Forward stepwise regression can even be applied in the high-dimensional setting where <em>p</em> &gt; <em>n</em>.</li>
+</ul></li>
+<li><em>Backward Stepwise Selection</em> begins will all <em>p</em> predictors in the model, then iteratively removes the least useful predictor one at a time. Requires that <em>n</em> &gt; <em>p</em>.</li>
+<li><em>Hybrid Methods</em> follows the forward stepwise approach, however, after adding each new variable, the method may also remove any variables that do not contribute to the model fit.</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Choosing the Best Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Each model requires a method to choose the best model:</li>
+<li>This is commonly done with:
+
+<ul>
+<li>AIC</li>
+<li>BIC</li>
+<li>Adjusted \(R^2\)</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Choosing the Best Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>AIC:
+\[AIC=2k-2ln\left(\hat{L}\right)\]</li>
+<li>BIC
+\[AIC=ln(n)k-2ln\left(\hat{L}\right)\]</li>
+<li>Adjusted \(R^2\)
+\[ Adjusted R^2 = 1 − 
+RSS/(n − d − 1) / TSS / (n-1)\]</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Shrinkage Methods</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>The subset selection methods described above used least squares fitting that contained a subset of the predictors to choose the best model, and estimate test error.<br></li>
+<li>Here, we discuss an alternative where we fit a model containing <strong>all</strong> <em>p</em> predictors using a technique that <em>constrains</em> or <em>regularizes</em> the coefficient estimates, or equivalently, that <em>shrinks</em> the coefficient estimates towards zero. </li>
+<li>The shrinking of the coefficient estimates has the effect of significantly reducing their variance. </li>
+<li>The two best-known techniques for shrinking the coefficient estimates towards zero are the <em>ridge regression</em> and the <em>lasso</em>.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Ridge Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Ridge Regression is a regularization method that tries to avoid overfitting, penalizing large coefficients through the L2 Norm. For this reason, it is also called L2 Regularization.</li>
+<li>In a linear regression, in practice it means we are minimizing the RSS (Residual Sum of Squares) added to the L2 Norm. Thus, we seek to minimize:
+\[ RSS(\beta) + \lambda \sum_{j=1}^{p} \beta_j^2 \]</li>
+<li>where \(\lambda\) is the tuning parameter, \(\beta_j\) are the estimated coefficients, existing \(p\) of them.</li>
+<li>To perform Ridge Regression in R, we will use the <code>glmnet</code> package.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Lasso Regression in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Lasso is also a regularization method that tries to avoid overfitting penalizing large coefficients, but it uses the L1 Norm. </li>
+<li>For this reason, it is also called L1 Regularization.</li>
+<li>it can shrink some of the coefficients to exactly zero, performing thus a selection of attributes with the regularization.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Lasso Regression in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>In a linear regression, in practice for the Lasso, it means we are minimizing the RSS (Residual Sum of Squares) added to the L1 Norm. </li>
+<li>Thus, we seek to minimize:
+\[ RSS(\beta) + \lambda \sum_{j=1}^{p} |\beta_j| \]</li>
+<li>where \(\lambda\) is the tuning parameter, \(\beta_j\) are the estimated coefficients, existing \(p\) of them.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Dimension Reduction Methods</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Many times it can be useful to reduce the number of dimensions in the data. </li>
+<li>These techniques transform the predictors and then use OLS to fit the model. 
+
+<ul>
+<li>PCA is the most popular</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Prepare Data for Ridge and Lasso</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(glmnet)
+wpbc2 &lt;- wpbc %&gt;%
+    filter(complete.cases(.))
+
+x  &lt;- wpbc2 %&gt;%
+    mutate(status= status==&quot;R&quot;) %&gt;%
+    select(-time) %&gt;%
+    as.matrix()
+
+y &lt;- wpbc2 %&gt;%
+    select(time) %&gt;%
+    as.matrix() %&gt;%
+    as.numeric()
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Ridge Regression Code</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(glmnet)
+
+set.seed(999)
+cv.ridge &lt;- cv.glmnet(x, y, alpha=0, parallel=TRUE, standardize=TRUE)
+
+# Results
+plot(cv.ridge)
+cv.ridge$lambda.min
+cv.ridge$lambda.1se
+coef(cv.ridge, s=cv.ridge$lambda.min)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Ridge Regression in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(999)
+cv.ridge &lt;- cv.glmnet(x, y, alpha=0, parallel=TRUE, standardize=TRUE)
+names(cv.ridge)
+</code></pre>
+
+<pre><code>##  [1] &quot;lambda&quot;     &quot;cvm&quot;        &quot;cvsd&quot;       &quot;cvup&quot;       &quot;cvlo&quot;      
+##  [6] &quot;nzero&quot;      &quot;name&quot;       &quot;glmnet.fit&quot; &quot;lambda.min&quot; &quot;lambda.1se&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>plotting Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-28-1.png" alt="plot of chunk unnamed-chunk-28"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Summarizing Regression</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r"># minimum MSE
+cv.ridge$lambda.min
+# 1 Standard Deviation lower MSE
+cv.ridge$lambda.1se
+</code></pre>
+
+<pre><code>## [1] 3.315557
+## [1] 78.396
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Coefficients</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## 35 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                 1
+## (Intercept)          3.235527e+01
+## status              -2.553112e+01
+## mean_radius         -7.789893e-01
+## mean_texture        -9.725642e-01
+## mean_perimeter      -1.554428e-01
+## mean_area           -7.944100e-03
+## mean_smoothness      3.324939e+02
+## mean_compactness    -7.917154e+01
+## mean_concavity      -5.550853e+01
+## mean_concavepoints   4.641079e+01
+## mean_symmetry        1.059912e+02
+## mean_fractaldim      8.084324e+01
+## SE_radius            3.675068e+00
+## SE_texture          -1.056314e+01
+## SE_perimeter         1.163136e+00
+## SE_area             -6.685528e-02
+## SE_smoothness        1.902593e+03
+## SE_compactness       1.795194e+02
+## SE_concavity        -2.363648e+02
+## SE_concavepoints    -6.706988e+02
+## SE_symmetry         -1.106107e+02
+## SE_fractaldim        1.572339e+03
+## worst_radius         9.592462e-01
+## worst_texture       -1.254951e-01
+## worst_perimeter      2.193647e-02
+## worst_area           5.915992e-03
+## worst_smoothness    -6.533344e+01
+## worst_compactness   -1.839329e+01
+## worst_concavity     -5.737260e+00
+## worst_concavepoints -1.116642e+01
+## worst_symmetry       4.334792e+01
+## worst_fractaldim     2.882653e+02
+## tsize                4.621365e-01
+## pnodes              -5.597729e-02
+## tsize_bin           -5.517951e+00
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Lasso Regression Code</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">require(glmnet)
+
+# Fitting the model (Lasso: Alpha = 1)
+set.seed(999)
+cv.lasso &lt;- cv.glmnet(x, y, family=&#39;gaussian&#39;, alpha=1,
+                      parallel=TRUE, standardize=TRUE)
+
+# Results
+plot(cv.lasso)
+plot(cv.lasso$glmnet.fit, xvar=&quot;lambda&quot;, label=TRUE)
+cv.lasso$lambda.min
+cv.lasso$lambda.1se
+coef(cv.lasso, s=cv.lasso$lambda.min)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Plotting Lasso</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-33-1.png" alt="plot of chunk unnamed-chunk-33"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Plotting Lasso</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-34-1.png" alt="plot of chunk unnamed-chunk-34"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Summarizing Lasso</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">cv.lasso$lambda.min
+cv.lasso$lambda.1se
+</code></pre>
+
+<pre><code>## [1] 0.7311237
+## [1] 5.157933
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Coefficients of Lasso</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>## 35 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                 1
+## (Intercept)           46.89795287
+## status               -25.66933766
+## mean_radius            .         
+## mean_texture          -1.10720367
+## mean_perimeter        -0.09999414
+## mean_area              .         
+## mean_smoothness      243.22671767
+## mean_compactness     -15.75050386
+## mean_concavity       -53.63964977
+## mean_concavepoints     .         
+## mean_symmetry         55.12745436
+## mean_fractaldim        .         
+## SE_radius              4.05792682
+## SE_texture           -10.14403539
+## SE_perimeter           0.02439483
+## SE_area                .         
+## SE_smoothness       1610.67402770
+## SE_compactness         .         
+## SE_concavity        -226.36854788
+## SE_concavepoints    -444.91968647
+## SE_symmetry            .         
+## SE_fractaldim       1454.32515558
+## worst_radius           .         
+## worst_texture          .         
+## worst_perimeter        .         
+## worst_area             .         
+## worst_smoothness       .         
+## worst_compactness      .         
+## worst_concavity       -3.38944618
+## worst_concavepoints    .         
+## worst_symmetry        31.39581144
+## worst_fractaldim     213.75569801
+## tsize                  .         
+## pnodes                 .         
+## tsize_bin             -2.55633977
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Linear Regression'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Outline'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='The Data: Wisconsin Prognostic Breast Cancer Data'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='One Categorical Covariate - Binary'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Binary Covariate'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Differences in Time by Status'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Differences in Time by Status'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Time by Status: t-test'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Time by Status: ANOVA'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='ANOVA vs t-test'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Time by Status: t-test'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Linear Regression'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='One Binary Categorical Variable - Continuous Outcome'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Assumptions of Linear Regression'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Example: Worst Area and Time'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Scatter Plot: Worst Area and Time'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Scatter Plot: Worst Area and Time'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Modeling What We See'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Population Regression Line'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='How do we Quantify this?'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='Population Regression Line'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='Population Regression Line'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='Population Regression Line'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='The Model'>
+         24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='What do We Have?'>
+         25
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=26 title='Picture of this'>
+         26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='What Does This Tell Us?'>
+         27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='Residual Errors'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='In Comes Least Squares'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='Inferences on OLS'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='Confidence Interval Creation'>
+         31
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=32 title='Example: worst area and time'>
+         32
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=33 title='Interpreting the Coefficients'>
+         33
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=34 title='Interpreting the Coefficients'>
+         34
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=35 title='Interpreting the Coefficients'>
+         35
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=36 title='Interpreting the Coefficients'>
+         36
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=37 title='Multiple Regression'>
+         37
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=38 title='Motivating Example'>
+         38
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=39 title='Motivating Example'>
+         39
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=40 title='Loading the Data'>
+         40
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=41 title='The Data'>
+         41
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=42 title='Consider Prostatectomy by Race'>
+         42
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=43 title='Consider Prostatectomy by Race'>
+         43
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=44 title='Consider Prostatectomy by Hospital'>
+         44
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=45 title='Consider Prostatectomy by Hospital'>
+         45
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=46 title='Multiple Regression of Prostatectomy'>
+         46
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=47 title='Multiple Regression of Prostatectomy'>
+         47
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=48 title='Benefits of Multiple Regression'>
+         48
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=49 title='Confounding'>
+         49
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=50 title='What Do We Do with Confounding?'>
+         50
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=51 title='Multiple Linear Regression with WPBC'>
+         51
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=52 title='Binary Tumor Size'>
+         52
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=53 title='Univariate Models'>
+         53
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=54 title='Multivariate Models'>
+         54
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=55 title='Testing Assumptions'>
+         55
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=56 title='Testing Assumptions'>
+         56
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=57 title='Assumptions'>
+         57
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=58 title='Interpretations'>
+         58
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=59 title='Interpretations'>
+         59
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=60 title='Variable Selection'>
+         60
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=61 title='All Subsets Regression'>
+         61
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=62 title='Leaps Package'>
+         62
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=63 title='NA'>
+         63
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=64 title='What do We see?'>
+         64
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=65 title='What Else does Leaps give?'>
+         65
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=66 title='Useful Information'>
+         66
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=67 title='Using \(R^2_{adj}\)'>
+         67
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=68 title='Using \(R^2_{adj}\)'>
+         68
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=69 title='\(R^2_{adj}\) Plot'>
+         69
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=70 title='Methods to Automatically Build Models'>
+         70
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=71 title='Subset Selection'>
+         71
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=72 title='NA'>
+         72
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=73 title='Choosing the Best Model'>
+         73
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=74 title='Choosing the Best Model'>
+         74
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=75 title='Shrinkage Methods'>
+         75
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=76 title='Ridge Regression'>
+         76
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=77 title='Lasso Regression in R'>
+         77
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=78 title='Lasso Regression in R'>
+         78
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=79 title='Dimension Reduction Methods'>
+         79
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=80 title='Prepare Data for Ridge and Lasso'>
+         80
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=81 title='Ridge Regression Code'>
+         81
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=82 title='Ridge Regression in R'>
+         82
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=83 title='plotting Regression'>
+         83
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=84 title='Summarizing Regression'>
+         84
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=85 title='Coefficients'>
+         85
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=86 title='Lasso Regression Code'>
+         86
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=87 title='Plotting Lasso'>
+         87
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=88 title='Plotting Lasso'>
+         88
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=89 title='Summarizing Lasso'>
+         89
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=90 title='Coefficients of Lasso'>
+         90
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/quiz/js/jquery.quiz.js"></script>
+<script src="libraries/widgets/quiz/js/mustache.min.js"></script>
+<script src="libraries/widgets/quiz/js/quiz-app.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+<script src="libraries/widgets/interactive/js/ace/js/ace.js"></script>
+<script src="libraries/widgets/interactive/js/opencpu-0.5.js"></script>
+<script src="libraries/widgets/interactive/js/interactive.js"></script>
+
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
