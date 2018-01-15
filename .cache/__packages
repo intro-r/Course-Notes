@@ -16,3 +16,14 @@ rmarkdown
 knitr
 car
 nortest
+survival
+MASS
+TH.data
+GGally
+broom
+DiagrammeR
+leaps
+Matrix
+foreach
+glmnet
+lars
