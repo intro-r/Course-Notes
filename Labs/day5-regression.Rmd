@@ -1,0 +1,31 @@
+---
+title: "Day 3: Regression Lab"
+author: ""
+date: "January 16, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Download the R Markdown File for this:
+
+You can access the R Markdown File [here](https://raw.githubusercontent.com/intro-r/Course-Notes/gh-pages/day5-regression.pdf)
+
+## Pre-lab work
+
+Consider the `comic_characters` data that we encountered previously. 
+
+1. Prepare the data by cleaning up the categories. 
+    a. eye has some problems
+    b. collapse categories in eye, hair and sex respectively. 
+
+2.  Explore this data using the tools of `dplyr` and the `summarise()` function. 
+3. Find out what things are most correlated. 
+4. Perform univariate regressions. 
+    a. Use glance to determine which has the strongest fit.
+    b. Use glance to determine which has the weakest fit. 
+5. Build a multivariate linear regression. 
+6. With the model that lasso returns, fit a model using lm with the same covariates and them comment on how assumptions of linear regression were met. 

@@ -4,9 +4,9 @@ subtitle    : "Day 3 - ANOVA"
 author      : Adam J Sullivan
 job         : 
 license     : by-nc-nd
-framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+framework   : deck.js        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
-hitheme     : tomorrow      # 
+hitheme     : solarized      # 
 widgets     : [mathjax, quiz, bootstrap, interactive]            # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
 logo        : bcbi_small.png
@@ -73,8 +73,8 @@ knitr::opts_chunk$set(results="hold")
         - Is it coming between the groups? 
 - The hypothesis test we perform is 
 
-$$ H_0: \mu_1 = \mu_2 = \cdots = \mu_k$$ 
-$$ \text{At least one group is different}$$
+$$ H_0:\;\; \mu_1 = \mu_2 = \cdots = \mu_k$$ 
+$$ H_1:\;\; \text{At least one group is different}$$
 
 
 
@@ -82,7 +82,7 @@ $$ \text{At least one group is different}$$
 
 ## What is our test then? 
 
-- We now move to testing with the $K$ distribution rather than the $t$-distribution:
+- We now move to testing with the $F$ distribution rather than the $t$-distribution:
 - We use the following test statistic:
 $$ k = \dfrac{\text{Measure of Between-Group Variability}}{\text{Measure of Within-Group Variability}}$$ 
 - How do we calculate these variabilities?
@@ -94,9 +94,9 @@ $$ k = \dfrac{\text{Measure of Between-Group Variability}}{\text{Measure of With
 
 - We calculate the following values:
     - Between Sum of Squares
-$$SS_B = \sum_{i=1}^k n_i(\bar(y)_i - \bar(y))^2$$
+$$SS_B = \sum_{i=1}^k n_i\left(\bar{y}_i - \bar{y}\right)^2$$
     - Within Sum of Squares
-$$SS_W = \sum_{i=1}^k \sum_{j=1}^{n_i} (y_{ij} - \bar(y)_i)^2$$
+$$SS_W = \sum_{i=1}^k \sum_{j=1}^{n_i} \left(y_{ij} - \bar{y}_i\right)^2$$
     - Total Sums of Squares
 $$SS = SS_B + SS_W$$
 - In all of these: $i$ is the index for $k$ groups and $j$ is the index for the $n_i$ observations in each group. 
@@ -119,7 +119,7 @@ $$SS = SS_B + SS_W$$
 
 |                     |   DF  |    Sum Sq.   |       Mean Sq       |           F value           |  Pr(>F) |
 |:-------------------:|:-----:|:------------:|:-------------------:|:---------------------------:|:-------:|
-| Between (treatment) | $k-1$ |  $SS_{B}$  |      $MS_{B} = \dfrac{SS_B}{k-1}$     | $\frac{MS_{trt}}{MS_{err}}$ | p-value |
+| Between (treatment) | $k-1$ |  $SS_{B}$  |      $MS_{B} = \dfrac{SS_B}{k-1}$     | $\frac{MS_{B}}{MS_{W}}$ | p-value |
 |    Within (error)   | $N-k$ | $SS_{W}$   | $MS_{W} = \dfrac{SS_W}{N-k}$ |                             |         |
 |    Total  | $N-1$ | $SS_{T}$   |  |                             |         |
 
@@ -320,8 +320,8 @@ summary(my_anova)
 ## What were we testing again?
 
 - Recall our hypothesis:
-$$ H_0: \mu_1 = \mu_2 = \cdots = \mu_k$$ 
-$$ \text{At least one group is different}$$
+$$ H_0:\;\; \mu_1 = \mu_2 = \cdots = \mu_k$$ 
+$$ H_1:\;\; \text{At least one group is different}$$
 - What can we say about these groups?
 
 
@@ -412,7 +412,7 @@ attach(comic)
 pairwise.t.test(log_app,sex, p.adjust="none")
 detach()
 ```
-- Remember to compare vs $\alpha=0.0025$
+- Remember to compare vs $\alpha=0.05/3\approx0.017$
 
 
 --- .class #id
@@ -534,8 +534,8 @@ detach()
 - For testing the normality of residuals we do the following:
     - Plot the Residuals
     - Perform Shapiro-Wilk test
-$$\text{Population is Normally Distributed}$$
-$$\text{Population is not Normally Distributed}$$
+$$H_0: \;\;\text{Population is Normally Distributed}$$
+$$H_1: \;\;\text{Population is not Normally Distributed}$$
 
 ```{r, eval=F}
 plot(my_anova, 2)
