@@ -27,3 +27,7 @@ Matrix
 foreach
 glmnet
 lars
+lattice
+BSDA
+gridExtra
+boot
