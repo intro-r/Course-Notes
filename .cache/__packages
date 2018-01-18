@@ -27,3 +27,10 @@ Matrix
 foreach
 glmnet
 lars
+<<<<<<< HEAD
+=======
+lattice
+BSDA
+gridExtra
+boot
+>>>>>>> master

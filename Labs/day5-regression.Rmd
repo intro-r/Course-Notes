@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "Day 3: Regression Lab"
+=======
+title: "Day 5: Regression Lab"
+>>>>>>> master
 author: ""
 date: "January 16, 2018"
 output: pdf_document
