@@ -1,0 +1,32 @@
+---
+title: "Day 7: Non-parametric"
+author: ""
+date: "January 16, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+In this lab you should be focusing on your own data by now. Take your data an consider the questions below. When you turn in this assignment, please turn in a pdf, html or word document that contains both the code and the output as we will not have access to your data. 
+
+1. Why might we prefer the median to the mean? 
+2. What are some benefits of Parametric models?
+3. What are some benefits of Non-Parametric models?
+4. Consider your data, find variables in this data in which you could perfrom a t-test on them:
+  a. Display boxplots of outcome separated by the 2 groups. 
+  b. Comment on whether or not they appear Normal. 
+  c. Perfrom the correct non-parametric version of the t-test given your data. 
+  d. perfrom the t-test.
+  e. Comment on differences.
+5. Consider ANOVA in your data:
+  a. Display boxplots of outcome separated by groups.
+  b. Run ANOVA on this data then display plots checking assumptions.
+  c. Perfrom non-parametric version of ANOVA and compare results with ANOVA. 
+6. Consider regressions in your data.
+  a. Build a multiple regression model. 
+  b. Bootstrap the model 1000 times. 
+  c. Compare the 95% bootstrap confidence intervals to the ones when you ran the model. 
