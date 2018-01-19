@@ -36,8 +36,11 @@ assets      : {assets: ../../assets}
 
 --- .class #id
 
-## How do we make? 
+## Lab
 
 - Honestly best method is an amazing walk through tutorial where you build an app:
 
 [Dean Attali Shiny Tutorial](https://deanattali.com/blog/building-shiny-apps-tutorial/)
+
+- Work through this and then for your homework, add extra features to the shiny app that you created. 
+
